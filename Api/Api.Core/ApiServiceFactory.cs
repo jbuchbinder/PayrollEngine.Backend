@@ -5,6 +5,7 @@ using PayrollEngine.Domain.Scripting;
 using PayrollEngine.Domain.Application;
 using PayrollEngine.Domain.Model.Repository;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using PayrollEngine.Domain.Application.Service;
 
 namespace PayrollEngine.Api.Core;
@@ -418,6 +419,7 @@ internal static class ApiServiceFactory
                 new()
                 {
                     DbContext = serviceProvider.GetRequiredService<IDbContext>(),
+                    TenantIsolationLevel = serviceProvider.GetRequiredService<IOptions<PayrollServerConfiguration>>().Value.TenantIsolationLevel,
                     UserRepository = serviceProvider.GetRequiredService<IUserRepository>(),
                     TaskRepository = serviceProvider.GetRequiredService<ITaskRepository>(),
                     LogRepository = serviceProvider.GetRequiredService<ILogRepository>(),
@@ -429,6 +431,7 @@ internal static class ApiServiceFactory
                     CompanyCaseValueRepository = serviceProvider.GetRequiredService<ICompanyCaseValueRepository>(),
                     EmployeeCaseValueRepository = serviceProvider.GetRequiredService<IEmployeeCaseValueRepository>(),
                     RegulationRepository = serviceProvider.GetRequiredService<IRegulationRepository>(),
+                    RegulationShareRepository = serviceProvider.GetRequiredService<IRegulationShareRepository>(),
                     LookupRepository = serviceProvider.GetRequiredService<ILookupRepository>(),
                     LookupValueRepository = serviceProvider.GetRequiredService<ILookupValueRepository>(),
                     WageTypeRepository = serviceProvider.GetRequiredService<IWageTypeRepository>(),

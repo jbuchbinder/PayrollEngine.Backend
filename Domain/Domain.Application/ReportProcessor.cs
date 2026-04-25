@@ -213,6 +213,8 @@ public class ReportProcessor(Tenant tenant, IQueryService queryService, ReportTo
             CollectorResultRepository = Settings.CollectorResultRepository,
             CollectorCustomResultRepository = Settings.CollectorCustomResultRepository,
             PayrunResultRepository = Settings.PayrunResultRepository,
+            RegulationShareRepository = Settings.RegulationShareRepository,
+            TenantIsolationLevel = Settings.TenantIsolationLevel,
             DivisionRepository = Settings.DivisionRepository,
             EmployeeRepository = Settings.EmployeeRepository,
             CalendarRepository = Settings.CalendarRepository,

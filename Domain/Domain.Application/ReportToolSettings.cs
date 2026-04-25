@@ -1,5 +1,6 @@
 ﻿using PayrollEngine.Domain.Model;
 using PayrollEngine.Domain.Model.Repository;
+using PayrollEngine.Domain.Scripting;
 
 namespace PayrollEngine.Domain.Application;
 
@@ -17,6 +18,7 @@ public class ReportToolSettings : FunctionToolSettings
     public ICompanyCaseValueRepository CompanyCaseValueRepository { get; init; }
     public IEmployeeCaseValueRepository EmployeeCaseValueRepository { get; init; }
     public IRegulationRepository RegulationRepository { get; init; }
+    public IRegulationShareRepository RegulationShareRepository { get; init; }
     public ILookupRepository LookupRepository { get; init; }
     public ILookupValueRepository LookupValueRepository { get; init; }
     public IWageTypeRepository WageTypeRepository { get; init; }
@@ -35,4 +37,5 @@ public class ReportToolSettings : FunctionToolSettings
     public ICalendarRepository CalendarRepository { get; init; }
     public IPayrollCalculatorProvider PayrollCalculatorProvider { get; init; }
     public IWebhookDispatchService WebhookDispatchService { get; init; }
+    public TenantIsolationLevel TenantIsolationLevel { get; init; } = TenantIsolationLevel.None;
 }
