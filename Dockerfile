@@ -59,4 +59,6 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
 COPY --from=build /app/publish .
+COPY Database/Create-Model.sql /sql/ModelCreate.sql
+COPY Database/Update-Model.sql /sql/ModelUpdate.sql
 ENTRYPOINT ["dotnet", "PayrollEngine.Backend.Server.dll"]

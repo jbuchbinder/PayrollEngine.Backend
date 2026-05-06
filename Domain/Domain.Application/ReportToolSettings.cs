@@ -1,6 +1,5 @@
 ﻿using PayrollEngine.Domain.Model;
 using PayrollEngine.Domain.Model.Repository;
-using PayrollEngine.Domain.Scripting;
 
 namespace PayrollEngine.Domain.Application;
 
