@@ -224,13 +224,11 @@ jobs:
       #   - PayrollServerConfiguration__XmlCommentFileNames__N: XML doc files required by
       #     Swashbuckle; must match the filenames produced by <DocumentationFile> in each csproj
       - name: Setup .NET (for swagger generation)
-        if: contains(github.repository, 'Backend')
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '10.0.x'
 
       - name: Generate swagger.json
-        if: contains(github.repository, 'Backend')
         env:
           ConnectionStrings__PayrollDatabaseConnection: "Server=localhost;Database=PayrollEngine;Integrated Security=false;"
           PayrollServerConfiguration__DbCommandTimeout: "00:02:00"
