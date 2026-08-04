@@ -1,6 +1,6 @@
 -- =============================================================================
 -- GetDerivedWageTypes
--- Excludes Binary, Script, ScriptVersion (performance hint identical to T-SQL)
+-- Excludes Binary, "Script", ScriptVersion (performance hint identical to T-SQL)
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedWageTypes(
@@ -21,8 +21,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -35,12 +35,12 @@ BEGIN
         wt.Id, wt.Status, wt.Created, wt.Updated, wt.RegulationId,
         wt.Name, wt.NameLocalizations, wt.WageTypeNumber,
         wt.Description, wt.DescriptionLocalizations,
-        wt.OverrideType, wt.ValueType, wt.Calendar, wt.Culture,
+        wt.OverrideType, wt.ValueType, wt."Calendar", wt.Culture,
         wt.Collectors, wt.CollectorGroups,
         wt.ValueExpression, wt.ResultExpression,
         wt.ValueActions, wt.ResultActions,
         wt.ScriptHash, wt.Attributes, wt.Clusters
-    FROM WageType wt
+    FROM "WageType" wt
     INNER JOIN Regulations reg ON wt.RegulationId = reg.Id
     WHERE wt.Status = 0
       AND wt.Created <= p_createdBefore

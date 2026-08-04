@@ -41,7 +41,7 @@ BEGIN
                 PARTITION BY r.CollectorNameHash, r.Start
                 ORDER BY r.Created DESC, r.Id DESC
             ) AS RowNumber
-        FROM CollectorCustomResult r
+        FROM "CollectorCustomResult" r
         WHERE r.TenantId = p_tenantId
           AND r.EmployeeId = p_employeeId
           AND (v_startHashCount = 0 OR
@@ -57,14 +57,14 @@ BEGIN
                    FROM jsonb_array_elements_text(p_collectorNameHashes::jsonb) AS jt(val))))
           AND (p_evaluationDate IS NULL OR r.Created <= p_evaluationDate)
           AND (p_jobStatus IS NULL OR r.PayrunJobId IN (
-                   SELECT pj.Id FROM PayrunJob pj WHERE (pj.JobStatus & p_jobStatus) = pj.JobStatus))
+                   SELECT pj.Id FROM "PayrunJob" pj WHERE (pj.JobStatus & p_jobStatus) = pj.JobStatus))
           AND (r.Forecast IS NULL OR r.Forecast = p_forecast)
           AND (p_noRetro = FALSE OR r.ParentJobId IS NULL)
           AND (p_excludeParentJobId IS NULL OR r.ParentJobId IS NULL
                OR r.ParentJobId <> p_excludeParentJobId)
     )
     SELECT r.*
-    FROM CollectorCustomResult r
+    FROM "CollectorCustomResult" r
     INNER JOIN Winners w ON w.Id = r.Id
     WHERE w.RowNumber = 1;
 END;

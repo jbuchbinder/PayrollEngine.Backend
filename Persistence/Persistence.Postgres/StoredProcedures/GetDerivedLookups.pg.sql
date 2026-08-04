@@ -18,8 +18,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -30,7 +30,7 @@ BEGIN
     SELECT
         reg.Id AS RegulationId, reg.Level, reg.Priority,
         lk.*
-    FROM Lookup lk
+    FROM "Lookup" lk
     INNER JOIN Regulations reg ON lk.RegulationId = reg.Id
     WHERE lk.Status = 0
       AND lk.Created <= p_createdBefore

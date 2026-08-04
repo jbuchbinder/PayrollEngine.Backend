@@ -14,10 +14,10 @@ DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
 BEGIN
-    v_attrSql  := BuildAttributeQuery('EmployeeCaseValue.Attributes', p_attributes);
-    v_pivotSql := 'CREATE TEMP TABLE EmployeeCaseValuePivot AS SELECT EmployeeCaseValue.*'
+    v_attrSql  := BuildAttributeQuery('"EmployeeCaseValue".Attributes', p_attributes);
+    v_pivotSql := 'CREATE TEMP TABLE EmployeeCaseValuePivot AS SELECT "EmployeeCaseValue".*'
         || v_attrSql
-        || ' FROM EmployeeCaseValue WHERE EmployeeCaseValue.EmployeeId = '
+        || ' FROM "EmployeeCaseValue" WHERE "EmployeeCaseValue".EmployeeId = '
         || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS EmployeeCaseValuePivot;

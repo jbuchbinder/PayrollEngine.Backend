@@ -31,7 +31,7 @@ BEGIN
     END IF;
 
         SELECT cr.*
-    FROM CollectorResult cr
+    FROM "CollectorResult" cr
     WHERE cr.TenantId = p_tenantId
       AND cr.EmployeeId = p_employeeId
       AND (p_divisionId IS NULL        OR cr.DivisionId = p_divisionId)
@@ -44,7 +44,7 @@ BEGIN
                FROM jsonb_array_elements_text(p_collectorNameHashes::jsonb) AS jt(val))))
       AND (p_periodStart IS NULL OR cr.Start BETWEEN p_periodStart AND p_periodEnd)
       AND (p_jobStatus IS NULL OR cr.PayrunJobId IN (
-               SELECT pj.Id FROM PayrunJob pj
+               SELECT pj.Id FROM "PayrunJob" pj
                WHERE pj.Id = cr.PayrunJobId
                  AND (pj.JobStatus & p_jobStatus) = pj.JobStatus))
       AND (cr.Forecast IS NULL OR cr.Forecast = p_forecast)

@@ -13,7 +13,7 @@
 --   TA_ -> GetTextAttributeValue(field, 'name') AS TA_xxx
 --   NA_ -> GetNumericAttributeValue(field, 'name') AS NA_xxx
 --   DA_ -> GetDateAttributeValue(field, 'name') AS DA_xxx
---   NULL field -> NULL AS xxx  (PayrunResult has no attribute field)
+--   NULL field -> NULL AS xxx  ("PayrunResult" has no attribute field)
 --
 -- NOTE: Attribute JSON keys are plain names ("City"), not prefixed ("TA_City").
 -- The TA_/NA_/DA_ prefix is the output column alias only.

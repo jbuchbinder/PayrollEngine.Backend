@@ -14,10 +14,10 @@ DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
 BEGIN
-    v_attrSql  := BuildAttributeQuery('GlobalCaseValue.Attributes', p_attributes);
-    v_pivotSql := 'CREATE TEMP TABLE GlobalCaseValuePivot AS SELECT GlobalCaseValue.*'
+    v_attrSql  := BuildAttributeQuery('"GlobalCaseValue".Attributes', p_attributes);
+    v_pivotSql := 'CREATE TEMP TABLE GlobalCaseValuePivot AS SELECT "GlobalCaseValue".*'
         || v_attrSql
-        || ' FROM GlobalCaseValue WHERE GlobalCaseValue.TenantId = '
+        || ' FROM "GlobalCaseValue" WHERE "GlobalCaseValue".TenantId = '
         || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS GlobalCaseValuePivot;

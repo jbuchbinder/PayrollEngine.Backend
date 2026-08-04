@@ -13,10 +13,10 @@ DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
 BEGIN
-    v_attrSql  := BuildAttributeQuery('NationalCaseValue.Attributes', p_attributes);
-    v_pivotSql := 'CREATE TEMP TABLE NationalCaseValuePivot AS SELECT NationalCaseValue.*'
+    v_attrSql  := BuildAttributeQuery('"NationalCaseValue".Attributes', p_attributes);
+    v_pivotSql := 'CREATE TEMP TABLE NationalCaseValuePivot AS SELECT "NationalCaseValue".*'
         || v_attrSql
-        || ' FROM NationalCaseValue WHERE NationalCaseValue.TenantId = '
+        || ' FROM "NationalCaseValue" WHERE "NationalCaseValue".TenantId = '
         || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS NationalCaseValuePivot;

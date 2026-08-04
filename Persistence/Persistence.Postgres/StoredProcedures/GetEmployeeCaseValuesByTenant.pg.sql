@@ -20,10 +20,10 @@ BEGIN
         ecv.CaseFieldName, ecv.CaseFieldNameLocalizations,
         ecv.CaseSlot, ecv.CaseSlotLocalizations,
         ecv.ValueType, ecv.Value, ecv.NumericValue, ecv.Culture,
-        ecv.CaseRelation, ecv.CancellationDate, ecv.Start, ecv."End",
+        ecv."CaseRelation", ecv.CancellationDate, ecv.Start, ecv."End",
         ecv.Forecast, ecv.Tags, ecv.Attributes
-    FROM EmployeeCaseValue ecv
-    INNER JOIN Employee e ON e.Id = ecv.EmployeeId
+    FROM "EmployeeCaseValue" ecv
+    INNER JOIN "Employee" e ON e.Id = ecv.EmployeeId
     WHERE e.TenantId = p_tenantId
       AND e.Status = 0
       AND ecv.CancellationDate IS NULL

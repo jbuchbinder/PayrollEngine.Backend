@@ -1,6 +1,6 @@
 -- =============================================================================
 -- GetDerivedReports
--- Excludes Binary, Script, ScriptVersion (performance hint)
+-- Excludes Binary, "Script", ScriptVersion (performance hint)
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedReports(
@@ -22,8 +22,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -40,7 +40,7 @@ BEGIN
         rp.AttributeMode, rp.UserType, rp.ReportIsolation,
         rp.BuildExpression, rp.StartExpression, rp.EndExpression,
         rp.ScriptHash, rp.Attributes, rp.Clusters
-    FROM Report rp
+    FROM "Report" rp
     INNER JOIN Regulations reg ON rp.RegulationId = reg.Id
     WHERE rp.Status = 0
       AND rp.Created <= p_createdBefore

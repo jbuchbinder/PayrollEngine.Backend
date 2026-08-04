@@ -19,8 +19,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -32,7 +32,7 @@ BEGIN
         reg.Id AS RegulationId, reg.Level, reg.Priority,
         s.Id, s.Status, s.Created, s.Updated, s.RegulationId,
         s.Name, s.FunctionTypeMask, s.Value
-    FROM Script s
+    FROM "Script" s
     INNER JOIN Regulations reg ON s.RegulationId = reg.Id
     WHERE s.Status = 0
       AND s.Created <= p_createdBefore

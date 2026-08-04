@@ -1,6 +1,6 @@
 -- =============================================================================
 -- GetDerivedCollectors
--- Excludes Binary, Script, ScriptVersion (performance hint)
+-- Excludes Binary, "Script", ScriptVersion (performance hint)
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedCollectors(
@@ -21,8 +21,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -40,7 +40,7 @@ BEGIN
         co.StartActions, co.ApplyActions, co.EndActions,
         co.Threshold, co.MinResult, co.MaxResult,
         co.ScriptHash, co.Attributes, co.Clusters
-    FROM Collector co
+    FROM "Collector" co
     INNER JOIN Regulations reg ON co.RegulationId = reg.Id
     WHERE co.Status = 0
       AND co.Created <= p_createdBefore

@@ -1,6 +1,6 @@
 -- =============================================================================
 -- GetDerivedCases
--- Excludes Binary, Script, ScriptVersion (performance hint identical to T-SQL)
+-- Excludes Binary, "Script", ScriptVersion (performance hint identical to T-SQL)
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedCases(
@@ -23,8 +23,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -44,7 +44,7 @@ BEGIN
         c.Lookups, c.Slots,
         c.ScriptHash, c.Attributes, c.Clusters,
         c.AvailableActions, c.BuildActions, c.ValidateActions
-    FROM "Case" c
+    FROM ""Case"" c
     INNER JOIN Regulations reg ON c.RegulationId = reg.Id
     WHERE c.Status = 0
       AND c.Created <= p_createdBefore

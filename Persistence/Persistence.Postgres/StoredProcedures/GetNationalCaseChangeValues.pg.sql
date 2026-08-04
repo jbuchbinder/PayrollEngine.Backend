@@ -18,53 +18,53 @@ DECLARE
     v_caseSlot      TEXT;
 BEGIN
     IF p_culture IS NULL THEN
-        v_caseName      := 'NationalCaseValue.CaseName';
-        v_caseFieldName := 'NationalCaseValue.CaseFieldName';
-        v_caseSlot      := 'NationalCaseValue.CaseSlot';
+        v_caseName      := '"NationalCaseValue".CaseName';
+        v_caseFieldName := '"NationalCaseValue".CaseFieldName';
+        v_caseSlot      := '"NationalCaseValue".CaseSlot';
     ELSE
-        v_caseName      := 'GetLocalizedValue(NationalCaseValue.CaseNameLocalizations, ''' || p_culture || ''', NationalCaseValue.CaseName)';
-        v_caseFieldName := 'GetLocalizedValue(NationalCaseValue.CaseFieldNameLocalizations, ''' || p_culture || ''', NationalCaseValue.CaseFieldName)';
-        v_caseSlot      := 'GetLocalizedValue(NationalCaseValue.CaseSlotLocalizations, ''' || p_culture || ''', NationalCaseValue.CaseSlot)';
+        v_caseName      := 'GetLocalizedValue("NationalCaseValue".CaseNameLocalizations, ''' || p_culture || ''', "NationalCaseValue".CaseName)';
+        v_caseFieldName := 'GetLocalizedValue("NationalCaseValue".CaseFieldNameLocalizations, ''' || p_culture || ''', "NationalCaseValue".CaseFieldName)';
+        v_caseSlot      := 'GetLocalizedValue("NationalCaseValue".CaseSlotLocalizations, ''' || p_culture || ''', "NationalCaseValue".CaseSlot)';
     END IF;
 
-    v_attrSql  := BuildAttributeQuery('NationalCaseValue.Attributes', p_attributes);
+    v_attrSql  := BuildAttributeQuery('"NationalCaseValue".Attributes', p_attributes);
     v_pivotSql := 'CREATE TEMP TABLE NationalCaseChangeValuePivot AS SELECT'
-        || ' NationalCaseChange.TenantId,'
-        || ' NationalCaseChange.Id AS CaseChangeId,'
-        || ' NationalCaseChange.Created AS CaseChangeCreated,'
-        || ' NationalCaseChange.Reason,'
-        || ' NationalCaseChange.ValidationCaseName,'
-        || ' NationalCaseChange.CancellationType,'
-        || ' NationalCaseChange.CancellationId,'
-        || ' NationalCaseChange.CancellationDate,'
+        || ' "NationalCaseChange".TenantId,'
+        || ' "NationalCaseChange".Id AS CaseChangeId,'
+        || ' "NationalCaseChange".Created AS CaseChangeCreated,'
+        || ' "NationalCaseChange".Reason,'
+        || ' "NationalCaseChange".ValidationCaseName,'
+        || ' "NationalCaseChange".CancellationType,'
+        || ' "NationalCaseChange".CancellationId,'
+        || ' "NationalCaseChange".CancellationDate,'
         || ' NULL AS EmployeeId,'
-        || ' NationalCaseChange.UserId,'
-        || ' "User".Identifier AS UserIdentifier,'
-        || ' NationalCaseChange.DivisionId,'
-        || ' NationalCaseValue.Id,'
-        || ' NationalCaseValue.Created,'
-        || ' NationalCaseValue.Updated,'
-        || ' NationalCaseValue.Status,'
+        || ' "NationalCaseChange".UserId,'
+        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "NationalCaseChange".DivisionId,'
+        || ' "NationalCaseValue".Id,'
+        || ' "NationalCaseValue".Created,'
+        || ' "NationalCaseValue".Updated,'
+        || ' "NationalCaseValue".Status,'
         || ' ' || v_caseName      || ' AS CaseName,'
         || ' ' || v_caseFieldName || ' AS CaseFieldName,'
         || ' ' || v_caseSlot      || ' AS CaseSlot,'
-        || ' NationalCaseValue.CaseRelation,'
-        || ' NationalCaseValue.ValueType,'
-        || ' NationalCaseValue.Value,'
-        || ' NationalCaseValue.NumericValue,'
-        || ' NationalCaseValue.Culture,'
-        || ' NationalCaseValue.Start,'
-        || ' NationalCaseValue."End",'
-        || ' NationalCaseValue.Forecast,'
-        || ' NationalCaseValue.Tags,'
-        || ' NationalCaseValue.Attributes,'
-        || ' (SELECT COUNT(*) FROM NationalCaseDocument WHERE CaseValueId = NationalCaseValue.Id) AS Documents'
+        || ' "NationalCaseValue"."CaseRelation",'
+        || ' "NationalCaseValue".ValueType,'
+        || ' "NationalCaseValue".Value,'
+        || ' "NationalCaseValue".NumericValue,'
+        || ' "NationalCaseValue".Culture,'
+        || ' "NationalCaseValue".Start,'
+        || ' "NationalCaseValue"."End",'
+        || ' "NationalCaseValue".Forecast,'
+        || ' "NationalCaseValue".Tags,'
+        || ' "NationalCaseValue".Attributes,'
+        || ' (SELECT COUNT(*) FROM "NationalCaseDocument" WHERE CaseValueId = "NationalCaseValue".Id) AS Documents'
         || v_attrSql
-        || ' FROM NationalCaseValue'
-        || ' LEFT JOIN NationalCaseValueChange ON NationalCaseValue.Id = NationalCaseValueChange.CaseValueId'
-        || ' LEFT JOIN NationalCaseChange ON NationalCaseValueChange.CaseChangeId = NationalCaseChange.Id'
-        || ' LEFT JOIN "User" ON "User".Id = NationalCaseChange.UserId'
-        || ' WHERE NationalCaseChange.TenantId = ' || p_parentId::TEXT;
+        || ' FROM "NationalCaseValue"'
+        || ' LEFT JOIN "NationalCaseValueChange" ON "NationalCaseValue".Id = "NationalCaseValueChange".CaseValueId'
+        || ' LEFT JOIN "NationalCaseChange" ON "NationalCaseValueChange".CaseChangeId = "NationalCaseChange".Id'
+        || ' LEFT JOIN ""User"" ON ""User"".Id = "NationalCaseChange".UserId'
+        || ' WHERE "NationalCaseChange".TenantId = ' || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS NationalCaseChangeValuePivot;
 

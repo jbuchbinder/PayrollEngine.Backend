@@ -1,7 +1,7 @@
 -- =============================================================================
 -- GetDerivedCaseRelations
 -- cr."Order" double-quoted (reserved keyword in PG)
--- Excludes Binary, Script, ScriptVersion (performance hint)
+-- Excludes Binary, "Script", ScriptVersion (performance hint)
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedCaseRelations(
@@ -23,8 +23,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -43,7 +43,7 @@ BEGIN
         cr.OverrideType, cr."Order",
         cr.ScriptHash, cr.Attributes, cr.Clusters,
         cr.BuildActions, cr.ValidateActions
-    FROM CaseRelation cr
+    FROM "CaseRelation" cr
     INNER JOIN Regulations reg ON cr.RegulationId = reg.Id
     WHERE cr.Status = 0
       AND cr.Created <= p_createdBefore

@@ -13,10 +13,10 @@ DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
 BEGIN
-    v_attrSql  := BuildAttributeQuery('CompanyCaseValue.Attributes', p_attributes);
-    v_pivotSql := 'CREATE TEMP TABLE CompanyCaseValuePivot AS SELECT CompanyCaseValue.*'
+    v_attrSql  := BuildAttributeQuery('"CompanyCaseValue".Attributes', p_attributes);
+    v_pivotSql := 'CREATE TEMP TABLE CompanyCaseValuePivot AS SELECT "CompanyCaseValue".*'
         || v_attrSql
-        || ' FROM CompanyCaseValue WHERE CompanyCaseValue.TenantId = '
+        || ' FROM "CompanyCaseValue" WHERE "CompanyCaseValue".TenantId = '
         || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS CompanyCaseValuePivot;

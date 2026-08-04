@@ -1,7 +1,7 @@
 -- =============================================================================
 -- GetDerivedLookupValues
 -- lv."Key" double-quoted (reserved keyword in PG)
--- Case-sensitive key filter (no LOWER(), identical to T-SQL)
+-- "Case"-sensitive key filter (no LOWER(), identical to T-SQL)
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedLookupValues(
@@ -21,8 +21,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -33,8 +33,8 @@ BEGIN
     SELECT
         reg.Id AS RegulationId, reg.Level, reg.Priority,
         lv.*
-    FROM LookupValue lv
-    INNER JOIN Lookup lk ON lv.LookupId = lk.Id
+    FROM "LookupValue" lv
+    INNER JOIN "Lookup" lk ON lv.LookupId = lk.Id
     INNER JOIN Regulations reg ON lk.RegulationId = reg.Id
     WHERE lv.Status = 0
       AND lv.Created <= p_createdBefore

@@ -31,7 +31,7 @@ BEGIN
     END IF;
 
         SELECT wtr.*
-    FROM WageTypeResult wtr
+    FROM "WageTypeResult" wtr
     WHERE wtr.TenantId = p_tenantId
       AND wtr.EmployeeId = p_employeeId
       AND (p_divisionId IS NULL        OR wtr.DivisionId = p_divisionId)
@@ -44,7 +44,7 @@ BEGIN
                FROM jsonb_array_elements_text(p_wageTypeNumbers::jsonb) AS jt(val))))
       AND (p_periodStart IS NULL OR wtr.Start BETWEEN p_periodStart AND p_periodEnd)
       AND (p_jobStatus IS NULL OR wtr.PayrunJobId IN (
-               SELECT pj.Id FROM PayrunJob pj
+               SELECT pj.Id FROM "PayrunJob" pj
                WHERE pj.Id = wtr.PayrunJobId
                  AND (pj.JobStatus & p_jobStatus) = pj.JobStatus))
       AND (wtr.Forecast IS NULL OR wtr.Forecast = p_forecast)

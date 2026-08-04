@@ -15,22 +15,22 @@ DECLARE
     v_maxValue  DECIMAL(28,6);
 BEGIN
     SELECT COALESCE(RangeSize, 0.0) INTO v_rangeSize
-    FROM Lookup WHERE Id = p_lookupId;
+    FROM "Lookup" WHERE Id = p_lookupId;
 
     SELECT MIN(lv.RangeValue), MAX(lv.RangeValue) + v_rangeSize
     INTO v_minValue, v_maxValue
-    FROM LookupValue lv
-    INNER JOIN Lookup lk ON lv.LookupId = lk.Id
+    FROM "LookupValue" lv
+    INNER JOIN "Lookup" lk ON lv.LookupId = lk.Id
     WHERE lk.Id = p_lookupId;
 
     IF v_minValue IS NULL
        OR p_rangeValue < v_minValue
        OR p_rangeValue > v_maxValue THEN
-        SELECT * FROM LookupValue WHERE 1 = 0;
+        SELECT * FROM "LookupValue" WHERE 1 = 0;
     ELSE
                 SELECT lv.*
-        FROM LookupValue lv
-        INNER JOIN Lookup lk ON lv.LookupId = lk.Id
+        FROM "LookupValue" lv
+        INNER JOIN "Lookup" lk ON lv.LookupId = lk.Id
         WHERE lk.Id = p_lookupId
           AND lv.RangeValue <= p_rangeValue
           AND (p_keyHash IS NULL OR lv.KeyHash = p_keyHash)

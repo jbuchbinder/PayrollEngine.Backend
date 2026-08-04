@@ -21,8 +21,8 @@ BEGIN
                 PARTITION BY pl.Id, r.Name
                 ORDER BY r.ValidFrom DESC, r.Created DESC
             ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
         WHERE r.Status = 0
           AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
           AND r.Created <= p_createdBefore
@@ -34,8 +34,8 @@ BEGIN
         reg.Id AS RegulationId, reg.Level, reg.Priority,
         c.Id AS CaseId, c.CaseType,
         cf.*
-    FROM CaseField cf
-    INNER JOIN "Case" c ON cf.CaseId = c.Id
+    FROM "CaseField" cf
+    INNER JOIN ""Case"" c ON cf.CaseId = c.Id
     INNER JOIN Regulations reg ON c.RegulationId = reg.Id
     WHERE cf.Status = 0
       AND cf.Created <= p_createdBefore
