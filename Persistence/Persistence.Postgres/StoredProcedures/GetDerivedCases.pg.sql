@@ -44,7 +44,7 @@ BEGIN
         c.Lookups, c.Slots,
         c.ScriptHash, c.Attributes, c.Clusters,
         c.AvailableActions, c.BuildActions, c.ValidateActions
-    FROM ""Case"" c
+    FROM "Case" c
     INNER JOIN Regulations reg ON c.RegulationId = reg.Id
     WHERE c.Status = 0
       AND c.Created <= p_createdBefore

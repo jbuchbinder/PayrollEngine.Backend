@@ -40,7 +40,7 @@ BEGIN
         || ' "EmployeeCaseChange".CancellationDate,'
         || ' "EmployeeCaseChange".EmployeeId,'
         || ' "EmployeeCaseChange".UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "EmployeeCaseChange".DivisionId,'
         || ' "EmployeeCaseValue".Id,'
         || ' "EmployeeCaseValue".Created,'
@@ -64,7 +64,7 @@ BEGIN
         || ' FROM "EmployeeCaseValue"'
         || ' LEFT JOIN "EmployeeCaseValueChange" ON "EmployeeCaseValue".Id = "EmployeeCaseValueChange".CaseValueId'
         || ' LEFT JOIN "EmployeeCaseChange" ON "EmployeeCaseValueChange".CaseChangeId = "EmployeeCaseChange".Id'
-        || ' LEFT JOIN ""User"" ON ""User"".Id = "EmployeeCaseChange".UserId'
+        || ' LEFT JOIN "User" ON "User".Id = "EmployeeCaseChange".UserId'
         || ' LEFT JOIN "Employee" ON "Employee".Id = "EmployeeCaseChange".EmployeeId'
         || ' WHERE "EmployeeCaseChange".EmployeeId = ' || p_parentId::TEXT;
 

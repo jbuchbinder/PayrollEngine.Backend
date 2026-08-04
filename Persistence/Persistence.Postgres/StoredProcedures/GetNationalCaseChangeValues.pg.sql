@@ -39,7 +39,7 @@ BEGIN
         || ' "NationalCaseChange".CancellationDate,'
         || ' NULL AS EmployeeId,'
         || ' "NationalCaseChange".UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "NationalCaseChange".DivisionId,'
         || ' "NationalCaseValue".Id,'
         || ' "NationalCaseValue".Created,'
@@ -63,7 +63,7 @@ BEGIN
         || ' FROM "NationalCaseValue"'
         || ' LEFT JOIN "NationalCaseValueChange" ON "NationalCaseValue".Id = "NationalCaseValueChange".CaseValueId'
         || ' LEFT JOIN "NationalCaseChange" ON "NationalCaseValueChange".CaseChangeId = "NationalCaseChange".Id'
-        || ' LEFT JOIN ""User"" ON ""User"".Id = "NationalCaseChange".UserId'
+        || ' LEFT JOIN "User" ON "User".Id = "NationalCaseChange".UserId'
         || ' WHERE "NationalCaseChange".TenantId = ' || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS NationalCaseChangeValuePivot;

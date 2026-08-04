@@ -69,8 +69,8 @@ BEGIN
         || ' "Division".Id AS DivisionId,'
         || ' "Division".Name AS DivisionName,'
         || ' "Division".Culture,'
-        || ' ""User"".Id AS UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Id AS UserId,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "Employee".Id AS EmployeeId,'
         || ' "Employee".Identifier AS EmployeeIdentifier'
         || v_attrNames
@@ -178,7 +178,7 @@ BEGIN
         || ' LEFT JOIN "Employee" ON "PayrollResult".EmployeeId = "Employee".Id'
         || ' LEFT JOIN "Payroll" ON "PayrollResult".PayrollId = "Payroll".Id'
         || ' LEFT JOIN "Division" ON "Payroll".DivisionId = "Division".Id'
-        || ' LEFT JOIN ""User"" ON "PayrunJob".CreatedUserId = ""User"".Id'
+        || ' LEFT JOIN "User" ON "PayrunJob".CreatedUserId = "User".Id'
         || v_where;
 
     DROP TABLE IF EXISTS PayrollResultPivot;

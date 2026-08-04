@@ -2192,25 +2192,25 @@ BEGIN
       AND r.TenantId = p_tenantId;
 
     DELETE FROM "CaseFieldAudit" cfa
-    USING "CaseField" cf, ""Case"" c, "Regulation" r
+    USING "CaseField" cf, "Case" c, "Regulation" r
     WHERE cfa.CaseFieldId = cf.Id
       AND cf.CaseId = c.Id
       AND c.RegulationId = r.Id
       AND r.TenantId = p_tenantId;
 
     DELETE FROM "CaseField" cf
-    USING ""Case"" c, "Regulation" r
+    USING "Case" c, "Regulation" r
     WHERE cf.CaseId = c.Id
       AND c.RegulationId = r.Id
       AND r.TenantId = p_tenantId;
 
     DELETE FROM "CaseAudit" ca
-    USING ""Case"" c, "Regulation" r
+    USING "Case" c, "Regulation" r
     WHERE ca.CaseId = c.Id
       AND c.RegulationId = r.Id
       AND r.TenantId = p_tenantId;
 
-    DELETE FROM ""Case"" c
+    DELETE FROM "Case" c
     USING "Regulation" r
     WHERE c.RegulationId = r.Id
       AND r.TenantId = p_tenantId;
@@ -2297,7 +2297,7 @@ BEGIN
     DELETE FROM "Task" WHERE TenantId = p_tenantId;
     DELETE FROM "Log" WHERE TenantId = p_tenantId;
     DELETE FROM "ReportLog" WHERE TenantId = p_tenantId;
-    DELETE FROM ""User"" WHERE TenantId = p_tenantId;
+    DELETE FROM "User" WHERE TenantId = p_tenantId;
     DELETE FROM "Division" WHERE TenantId = p_tenantId;
     DELETE FROM "Calendar" WHERE TenantId = p_tenantId;
     DELETE FROM "Tenant" WHERE Id = p_tenantId;
@@ -2461,7 +2461,7 @@ BEGIN
         || ' "CompanyCaseChange".CancellationDate,'
         || ' NULL AS EmployeeId,'
         || ' "CompanyCaseChange".UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "CompanyCaseChange".DivisionId,'
         || ' "CompanyCaseValue".Id,'
         || ' "CompanyCaseValue".Created,'
@@ -2485,7 +2485,7 @@ BEGIN
         || ' FROM "CompanyCaseValue"'
         || ' LEFT JOIN "CompanyCaseValueChange" ON "CompanyCaseValue".Id = "CompanyCaseValueChange".CaseValueId'
         || ' LEFT JOIN "CompanyCaseChange" ON "CompanyCaseValueChange".CaseChangeId = "CompanyCaseChange".Id'
-        || ' LEFT JOIN ""User"" ON ""User"".Id = "CompanyCaseChange".UserId'
+        || ' LEFT JOIN "User" ON "User".Id = "CompanyCaseChange".UserId'
         || ' WHERE "CompanyCaseChange".TenantId = ' || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS CompanyCaseChangeValuePivot;
@@ -2949,7 +2949,7 @@ BEGIN
         c.Id AS CaseId, c.CaseType,
         cf.*
     FROM "CaseField" cf
-    INNER JOIN ""Case"" c ON cf.CaseId = c.Id
+    INNER JOIN "Case" c ON cf.CaseId = c.Id
     INNER JOIN Regulations reg ON c.RegulationId = reg.Id
     WHERE cf.Status = 0
       AND cf.Created <= p_createdBefore
@@ -3002,7 +3002,7 @@ BEGIN
         c.Id AS CaseId, c.CaseType,
         cf.*
     FROM "CaseField" cf
-    INNER JOIN ""Case"" c ON cf.CaseId = c.Id
+    INNER JOIN "Case" c ON cf.CaseId = c.Id
     INNER JOIN Regulations reg ON c.RegulationId = reg.Id
     WHERE cf.Status = 0
       AND cf.Created <= p_createdBefore
@@ -3125,7 +3125,7 @@ BEGIN
         c.Lookups, c.Slots,
         c.ScriptHash, c.Attributes, c.Clusters,
         c.AvailableActions, c.BuildActions, c.ValidateActions
-    FROM ""Case"" c
+    FROM "Case" c
     INNER JOIN Regulations reg ON c.RegulationId = reg.Id
     WHERE c.Status = 0
       AND c.Created <= p_createdBefore
@@ -3654,7 +3654,7 @@ BEGIN
         || ' "EmployeeCaseChange".CancellationDate,'
         || ' "EmployeeCaseChange".EmployeeId,'
         || ' "EmployeeCaseChange".UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "EmployeeCaseChange".DivisionId,'
         || ' "EmployeeCaseValue".Id,'
         || ' "EmployeeCaseValue".Created,'
@@ -3678,7 +3678,7 @@ BEGIN
         || ' FROM "EmployeeCaseValue"'
         || ' LEFT JOIN "EmployeeCaseValueChange" ON "EmployeeCaseValue".Id = "EmployeeCaseValueChange".CaseValueId'
         || ' LEFT JOIN "EmployeeCaseChange" ON "EmployeeCaseValueChange".CaseChangeId = "EmployeeCaseChange".Id'
-        || ' LEFT JOIN ""User"" ON ""User"".Id = "EmployeeCaseChange".UserId'
+        || ' LEFT JOIN "User" ON "User".Id = "EmployeeCaseChange".UserId'
         || ' LEFT JOIN "Employee" ON "Employee".Id = "EmployeeCaseChange".EmployeeId'
         || ' WHERE "EmployeeCaseChange".EmployeeId = ' || p_parentId::TEXT;
 
@@ -3824,7 +3824,7 @@ BEGIN
         || ' "GlobalCaseChange".CancellationDate,'
         || ' NULL AS EmployeeId,'
         || ' "GlobalCaseChange".UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "GlobalCaseChange".DivisionId,'
         || ' "GlobalCaseValue".Id,'
         || ' "GlobalCaseValue".Created,'
@@ -3848,7 +3848,7 @@ BEGIN
         || ' FROM "GlobalCaseValue"'
         || ' LEFT JOIN "GlobalCaseValueChange" ON "GlobalCaseValue".Id = "GlobalCaseValueChange".CaseValueId'
         || ' LEFT JOIN "GlobalCaseChange" ON "GlobalCaseValueChange".CaseChangeId = "GlobalCaseChange".Id'
-        || ' LEFT JOIN ""User"" ON ""User"".Id = "GlobalCaseChange".UserId'
+        || ' LEFT JOIN "User" ON "User".Id = "GlobalCaseChange".UserId'
         || ' WHERE "GlobalCaseChange".TenantId = ' || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS GlobalCaseChangeValuePivot;
@@ -3988,7 +3988,7 @@ BEGIN
         || ' "NationalCaseChange".CancellationDate,'
         || ' NULL AS EmployeeId,'
         || ' "NationalCaseChange".UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "NationalCaseChange".DivisionId,'
         || ' "NationalCaseValue".Id,'
         || ' "NationalCaseValue".Created,'
@@ -4012,7 +4012,7 @@ BEGIN
         || ' FROM "NationalCaseValue"'
         || ' LEFT JOIN "NationalCaseValueChange" ON "NationalCaseValue".Id = "NationalCaseValueChange".CaseValueId'
         || ' LEFT JOIN "NationalCaseChange" ON "NationalCaseValueChange".CaseChangeId = "NationalCaseChange".Id'
-        || ' LEFT JOIN ""User"" ON ""User"".Id = "NationalCaseChange".UserId'
+        || ' LEFT JOIN "User" ON "User".Id = "NationalCaseChange".UserId'
         || ' WHERE "NationalCaseChange".TenantId = ' || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS NationalCaseChangeValuePivot;
@@ -4137,8 +4137,8 @@ BEGIN
         || ' "Division".Id AS DivisionId,'
         || ' "Division".Name AS DivisionName,'
         || ' "Division".Culture,'
-        || ' ""User"".Id AS UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Id AS UserId,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "Employee".Id AS EmployeeId,'
         || ' "Employee".Identifier AS EmployeeIdentifier'
         || v_attrNames
@@ -4246,7 +4246,7 @@ BEGIN
         || ' LEFT JOIN "Employee" ON "PayrollResult".EmployeeId = "Employee".Id'
         || ' LEFT JOIN "Payroll" ON "PayrollResult".PayrollId = "Payroll".Id'
         || ' LEFT JOIN "Division" ON "Payroll".DivisionId = "Division".Id'
-        || ' LEFT JOIN ""User"" ON "PayrunJob".CreatedUserId = ""User"".Id'
+        || ' LEFT JOIN "User" ON "PayrunJob".CreatedUserId = "User".Id'
         || v_where;
 
     DROP TABLE IF EXISTS PayrollResultPivot;

@@ -167,25 +167,25 @@ BEGIN
       AND r.TenantId = p_tenantId;
 
     DELETE FROM "CaseFieldAudit" cfa
-    USING "CaseField" cf, ""Case"" c, "Regulation" r
+    USING "CaseField" cf, "Case" c, "Regulation" r
     WHERE cfa.CaseFieldId = cf.Id
       AND cf.CaseId = c.Id
       AND c.RegulationId = r.Id
       AND r.TenantId = p_tenantId;
 
     DELETE FROM "CaseField" cf
-    USING ""Case"" c, "Regulation" r
+    USING "Case" c, "Regulation" r
     WHERE cf.CaseId = c.Id
       AND c.RegulationId = r.Id
       AND r.TenantId = p_tenantId;
 
     DELETE FROM "CaseAudit" ca
-    USING ""Case"" c, "Regulation" r
+    USING "Case" c, "Regulation" r
     WHERE ca.CaseId = c.Id
       AND c.RegulationId = r.Id
       AND r.TenantId = p_tenantId;
 
-    DELETE FROM ""Case"" c
+    DELETE FROM "Case" c
     USING "Regulation" r
     WHERE c.RegulationId = r.Id
       AND r.TenantId = p_tenantId;
@@ -272,7 +272,7 @@ BEGIN
     DELETE FROM "Task" WHERE TenantId = p_tenantId;
     DELETE FROM "Log" WHERE TenantId = p_tenantId;
     DELETE FROM "ReportLog" WHERE TenantId = p_tenantId;
-    DELETE FROM ""User"" WHERE TenantId = p_tenantId;
+    DELETE FROM "User" WHERE TenantId = p_tenantId;
     DELETE FROM "Division" WHERE TenantId = p_tenantId;
     DELETE FROM "Calendar" WHERE TenantId = p_tenantId;
     DELETE FROM "Tenant" WHERE Id = p_tenantId;

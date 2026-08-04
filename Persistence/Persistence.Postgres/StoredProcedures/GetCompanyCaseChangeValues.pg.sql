@@ -39,7 +39,7 @@ BEGIN
         || ' "CompanyCaseChange".CancellationDate,'
         || ' NULL AS EmployeeId,'
         || ' "CompanyCaseChange".UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "CompanyCaseChange".DivisionId,'
         || ' "CompanyCaseValue".Id,'
         || ' "CompanyCaseValue".Created,'
@@ -63,7 +63,7 @@ BEGIN
         || ' FROM "CompanyCaseValue"'
         || ' LEFT JOIN "CompanyCaseValueChange" ON "CompanyCaseValue".Id = "CompanyCaseValueChange".CaseValueId'
         || ' LEFT JOIN "CompanyCaseChange" ON "CompanyCaseValueChange".CaseChangeId = "CompanyCaseChange".Id'
-        || ' LEFT JOIN ""User"" ON ""User"".Id = "CompanyCaseChange".UserId'
+        || ' LEFT JOIN "User" ON "User".Id = "CompanyCaseChange".UserId'
         || ' WHERE "CompanyCaseChange".TenantId = ' || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS CompanyCaseChangeValuePivot;

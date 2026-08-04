@@ -39,7 +39,7 @@ BEGIN
         || ' "GlobalCaseChange".CancellationDate,'
         || ' NULL AS EmployeeId,'
         || ' "GlobalCaseChange".UserId,'
-        || ' ""User"".Identifier AS UserIdentifier,'
+        || ' "User".Identifier AS UserIdentifier,'
         || ' "GlobalCaseChange".DivisionId,'
         || ' "GlobalCaseValue".Id,'
         || ' "GlobalCaseValue".Created,'
@@ -63,7 +63,7 @@ BEGIN
         || ' FROM "GlobalCaseValue"'
         || ' LEFT JOIN "GlobalCaseValueChange" ON "GlobalCaseValue".Id = "GlobalCaseValueChange".CaseValueId'
         || ' LEFT JOIN "GlobalCaseChange" ON "GlobalCaseValueChange".CaseChangeId = "GlobalCaseChange".Id'
-        || ' LEFT JOIN ""User"" ON ""User"".Id = "GlobalCaseChange".UserId'
+        || ' LEFT JOIN "User" ON "User".Id = "GlobalCaseChange".UserId'
         || ' WHERE "GlobalCaseChange".TenantId = ' || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS GlobalCaseChangeValuePivot;

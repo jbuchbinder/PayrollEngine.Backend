@@ -35,7 +35,7 @@ BEGIN
         c.Id AS CaseId, c.CaseType,
         cf.*
     FROM "CaseField" cf
-    INNER JOIN ""Case"" c ON cf.CaseId = c.Id
+    INNER JOIN "Case" c ON cf.CaseId = c.Id
     INNER JOIN Regulations reg ON c.RegulationId = reg.Id
     WHERE cf.Status = 0
       AND cf.Created <= p_createdBefore
