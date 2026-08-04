@@ -195,7 +195,7 @@ public class DbContext : IDbContext
             await using var collationCommand = new NpgsqlCommand(
                 "SELECT datcollate FROM pg_database WHERE datname = current_database()", connection);
             var collation = (string)await collationCommand.ExecuteScalarAsync();
-            if (!string.Equals(collation, RequiredCollation, StringComparison.OrdinalIgnoreCase))
+            if (!string.Equals(collation?.Replace("-", ""), RequiredCollation.Replace("-", ""), StringComparison.OrdinalIgnoreCase))
             {
                 throw new PayrollException(
                     $"Invalid database collation {collation}. Expected {RequiredCollation}.");
