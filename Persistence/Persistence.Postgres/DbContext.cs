@@ -203,7 +203,7 @@ public class DbContext : IDbContext
 
             // version check
             await using var command = new NpgsqlCommand(
-                "SELECT majorversion, minorversion, subversion FROM version " +
+                "SELECT majorversion, minorversion, subversion FROM \"Version\" " +
                 "ORDER BY majorversion DESC, minorversion DESC, subversion DESC LIMIT 1",
                 connection);
 
