@@ -30,8 +30,7 @@ BEGIN
         LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    SELECT wtcr.*
+        SELECT wtcr.*
     FROM WageTypeCustomResult wtcr
     WHERE wtcr.TenantId = p_tenantId
       AND wtcr.EmployeeId = p_employeeId

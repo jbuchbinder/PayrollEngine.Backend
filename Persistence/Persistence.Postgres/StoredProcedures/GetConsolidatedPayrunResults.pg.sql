@@ -36,7 +36,6 @@ BEGIN
         FROM jsonb_array_elements_text(p_periodStartHashes::jsonb) AS jt(val) LIMIT 1;
     END IF;
 
-    RETURN QUERY
     -- Phase 1: select winning IDs via index-only scan
     WITH Winners AS (
         SELECT r.Id,

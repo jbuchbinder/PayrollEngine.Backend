@@ -17,8 +17,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedCases(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name

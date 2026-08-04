@@ -26,10 +26,9 @@ BEGIN
     IF v_minValue IS NULL
        OR p_rangeValue < v_minValue
        OR p_rangeValue > v_maxValue THEN
-        RETURN QUERY SELECT * FROM LookupValue WHERE 1 = 0;
+        SELECT * FROM LookupValue WHERE 1 = 0;
     ELSE
-        RETURN QUERY
-        SELECT lv.*
+                SELECT lv.*
         FROM LookupValue lv
         INNER JOIN Lookup lk ON lv.LookupId = lk.Id
         WHERE lk.Id = p_lookupId

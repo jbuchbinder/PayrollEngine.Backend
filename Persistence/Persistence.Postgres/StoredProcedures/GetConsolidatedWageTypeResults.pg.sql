@@ -35,8 +35,7 @@ BEGIN
         FROM jsonb_array_elements_text(p_periodStartHashes::jsonb) AS jt(val) LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    WITH Winners AS (
+        WITH Winners AS (
         SELECT r.Id,
             ROW_NUMBER() OVER (
                 PARTITION BY r.WageTypeNumber, r.Start

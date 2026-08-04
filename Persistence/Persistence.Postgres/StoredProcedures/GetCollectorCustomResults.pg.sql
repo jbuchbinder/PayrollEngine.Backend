@@ -30,8 +30,7 @@ BEGIN
         LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    SELECT ccr.*
+        SELECT ccr.*
     FROM CollectorCustomResult ccr
     WHERE ccr.TenantId = p_tenantId
       AND ccr.EmployeeId = p_employeeId

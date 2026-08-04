@@ -1,14 +1,11 @@
 -- =============================================================================
 -- Create-Model.pg.sql
 -- Creates the PayrollEngine database for PostgreSQL 14+ (16 LTS recommended).
---
 -- Schema version: 1.0.0
---
 -- Includes: all tables, 37 indexes, 7 functions, 44 stored procedures
--- Reserved words quoted: Case, User, Binary, Key, Order, Schema, End, Limit
+-- Reserved words: Case, User, Binary, Key, Order, Schema, End, Limit
 -- =============================================================================
 
--- =============================================================================
 -- TABLES
 -- =============================================================================
 
@@ -1359,8 +1356,7 @@ CREATE TABLE IF NOT EXISTS WebhookMessage (
 
 -- =============================================================================
 
--- =============================================================================
--- INDEXES (37)
+-- INDEXES
 -- =============================================================================
 
 -- =============================================================================
@@ -1433,7 +1429,6 @@ CREATE UNIQUE INDEX IX_Webhook_UniquePerTenant              ON Webhook (TenantId
 
 -- =============================================================================
 
--- =============================================================================
 -- FUNCTIONS (7)
 -- =============================================================================
 
@@ -1768,7 +1763,7 @@ BEGIN
 END;
 $$;
 
--- =============================================================================
+
 -- STORED PROCEDURES (44)
 -- =============================================================================
 
@@ -2344,8 +2339,7 @@ BEGIN
         LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    SELECT ccr.*
+        SELECT ccr.*
     FROM CollectorCustomResult ccr
     WHERE ccr.TenantId = p_tenantId
       AND ccr.EmployeeId = p_employeeId
@@ -2402,8 +2396,7 @@ BEGIN
         LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    SELECT cr.*
+        SELECT cr.*
     FROM CollectorResult cr
     WHERE cr.TenantId = p_tenantId
       AND cr.EmployeeId = p_employeeId
@@ -2584,8 +2577,7 @@ BEGIN
         FROM jsonb_array_elements_text(p_periodStartHashes::jsonb) AS jt(val) LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    WITH Winners AS (
+        WITH Winners AS (
         SELECT r.Id,
             ROW_NUMBER() OVER (
                 PARTITION BY r.CollectorNameHash, r.Start
@@ -2659,8 +2651,7 @@ BEGIN
         FROM jsonb_array_elements_text(p_periodStartHashes::jsonb) AS jt(val) LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    WITH Winners AS (
+        WITH Winners AS (
         SELECT r.Id,
             ROW_NUMBER() OVER (
                 PARTITION BY r.CollectorNameHash, r.Start
@@ -2735,7 +2726,6 @@ BEGIN
         FROM jsonb_array_elements_text(p_periodStartHashes::jsonb) AS jt(val) LIMIT 1;
     END IF;
 
-    RETURN QUERY
     -- Phase 1: select winning IDs via index-only scan
     WITH Winners AS (
         SELECT r.Id,
@@ -2812,8 +2802,7 @@ BEGIN
         FROM jsonb_array_elements_text(p_periodStartHashes::jsonb) AS jt(val) LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    WITH Winners AS (
+        WITH Winners AS (
         SELECT r.Id,
             ROW_NUMBER() OVER (
                 PARTITION BY r.WageTypeNumber, r.Start
@@ -2887,8 +2876,7 @@ BEGIN
         FROM jsonb_array_elements_text(p_periodStartHashes::jsonb) AS jt(val) LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    WITH Winners AS (
+        WITH Winners AS (
         SELECT r.Id,
             ROW_NUMBER() OVER (
                 PARTITION BY r.WageTypeNumber, r.Start
@@ -2942,8 +2930,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedCaseFields(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -2996,8 +2983,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedCaseFieldsOfCase(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3052,8 +3038,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedCaseRelations(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3114,8 +3099,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedCases(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3177,8 +3161,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedCollectors(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3236,8 +3219,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedLookupValues(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3288,8 +3270,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedLookups(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3336,8 +3317,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedPayrollRegulations(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3386,8 +3366,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedReportParameters(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3435,8 +3414,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedReportTemplates(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3488,8 +3466,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedReports(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3545,8 +3522,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedScripts(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3596,8 +3572,7 @@ CREATE OR REPLACE PROCEDURE GetDerivedWageTypes(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    WITH DerivedRegulations AS (
+        WITH DerivedRegulations AS (
         SELECT r.Id, pl.Level, pl.Priority,
             ROW_NUMBER() OVER (
                 PARTITION BY pl.Id, r.Name
@@ -3775,8 +3750,7 @@ CREATE OR REPLACE PROCEDURE GetEmployeeCaseValuesByTenant(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    SELECT
+        SELECT
         ecv.Id, ecv.Status, ecv.Created, ecv.Updated,
         ecv.EmployeeId, ecv.DivisionId,
         ecv.CaseName, ecv.CaseNameLocalizations,
@@ -3958,10 +3932,9 @@ BEGIN
     IF v_minValue IS NULL
        OR p_rangeValue < v_minValue
        OR p_rangeValue > v_maxValue THEN
-        RETURN QUERY SELECT * FROM LookupValue WHERE 1 = 0;
+        SELECT * FROM LookupValue WHERE 1 = 0;
     ELSE
-        RETURN QUERY
-        SELECT lv.*
+                SELECT lv.*
         FROM LookupValue lv
         INNER JOIN Lookup lk ON lv.LookupId = lk.Id
         WHERE lk.Id = p_lookupId
@@ -4324,8 +4297,7 @@ BEGIN
         LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    SELECT wtcr.*
+        SELECT wtcr.*
     FROM WageTypeCustomResult wtcr
     WHERE wtcr.TenantId = p_tenantId
       AND wtcr.EmployeeId = p_employeeId
@@ -4382,8 +4354,7 @@ BEGIN
         LIMIT 1;
     END IF;
 
-    RETURN QUERY
-    SELECT wtr.*
+        SELECT wtr.*
     FROM WageTypeResult wtr
     WHERE wtr.TenantId = p_tenantId
       AND wtr.EmployeeId = p_employeeId

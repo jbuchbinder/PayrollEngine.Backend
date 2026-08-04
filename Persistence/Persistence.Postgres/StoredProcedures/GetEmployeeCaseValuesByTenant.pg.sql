@@ -13,8 +13,7 @@ CREATE OR REPLACE PROCEDURE GetEmployeeCaseValuesByTenant(
 LANGUAGE plpgsql
 AS $$
 BEGIN
-    RETURN QUERY
-    SELECT
+        SELECT
         ecv.Id, ecv.Status, ecv.Created, ecv.Updated,
         ecv.EmployeeId, ecv.DivisionId,
         ecv.CaseName, ecv.CaseNameLocalizations,
