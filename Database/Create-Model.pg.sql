@@ -5,19 +5,11 @@
 -- Schema version: 1.0.0
 --
 -- Includes: all tables, 37 indexes, 7 functions, 44 stored procedures
---
--- Mapping from MySQL:
---   DATETIME(6)  -> TIMESTAMP(6)
---   TINYINT(1)   -> BOOLEAN
---   LONGTEXT     -> TEXT
---   LONGBLOB     -> BYTEA
---   AUTO_INCREMENT -> GENERATED ALWAYS AS IDENTITY
---
--- Reserved words quoted: Case, User, Binary, Key, Order, Schema
+-- Reserved words quoted: Case, User, Binary, Key, Order, Schema, End, Limit
 -- =============================================================================
 
 -- =============================================================================
--- TABLES (alphabetical order, dependencies first)
+-- TABLES
 -- =============================================================================
 
 -- =============================================================================
@@ -335,7 +327,7 @@ CREATE TABLE IF NOT EXISTS CollectorCustomResult (
     Culture VARCHAR(128)  NOT NULL,
     Start TIMESTAMP(6)   NOT NULL,
     StartHash INT           NOT NULL,
-    End TIMESTAMP(6)   NOT NULL,
+    "End" TIMESTAMP(6)   NOT NULL,
     PayrunJobId INT           NOT NULL,
     Forecast VARCHAR(128)  NULL,
     ParentJobId INT           NULL,
@@ -364,7 +356,7 @@ CREATE TABLE IF NOT EXISTS CollectorResult (
     Culture VARCHAR(128)  NOT NULL,
     Start TIMESTAMP(6)   NOT NULL,
     StartHash INT           NOT NULL,
-    End TIMESTAMP(6)   NOT NULL,
+    "End" TIMESTAMP(6)   NOT NULL,
     PayrunJobId INT           NOT NULL,
     Forecast VARCHAR(128)  NULL,
     ParentJobId INT           NULL,
@@ -422,7 +414,7 @@ CREATE TABLE IF NOT EXISTS CompanyCaseValue (
     CaseRelation TEXT      NULL,
     CancellationDate TIMESTAMP(6)   NULL,
     Start TIMESTAMP(6)   NULL,
-    End TIMESTAMP(6)   NULL,
+    "End" TIMESTAMP(6)   NULL,
     Forecast VARCHAR(128)  NULL,
     Tags TEXT      NULL,
     Attributes TEXT      NULL,
@@ -517,7 +509,7 @@ CREATE TABLE IF NOT EXISTS EmployeeCaseValue (
     CaseRelation TEXT      NULL,
     CancellationDate TIMESTAMP(6)   NULL,
     Start TIMESTAMP(6)   NULL,
-    End TIMESTAMP(6)   NULL,
+    "End" TIMESTAMP(6)   NULL,
     Forecast VARCHAR(128)  NULL,
     Tags TEXT      NULL,
     Attributes TEXT      NULL,
@@ -593,7 +585,7 @@ CREATE TABLE IF NOT EXISTS GlobalCaseValue (
     CaseRelation TEXT      NULL,
     CancellationDate TIMESTAMP(6)   NULL,
     Start TIMESTAMP(6)   NULL,
-    End TIMESTAMP(6)   NULL,
+    "End" TIMESTAMP(6)   NULL,
     Forecast VARCHAR(128)  NULL,
     Tags TEXT      NULL,
     Attributes TEXT      NULL,
@@ -741,7 +733,7 @@ CREATE TABLE IF NOT EXISTS NationalCaseValue (
     CaseRelation TEXT      NULL,
     CancellationDate TIMESTAMP(6)   NULL,
     Start TIMESTAMP(6)   NULL,
-    End TIMESTAMP(6)   NULL,
+    "End" TIMESTAMP(6)   NULL,
     Forecast VARCHAR(128)  NULL,
     Tags TEXT      NULL,
     Attributes TEXT      NULL,
@@ -929,7 +921,7 @@ CREATE TABLE IF NOT EXISTS PayrunResult (
     Culture VARCHAR(128)  NOT NULL,
     Start TIMESTAMP(6)   NULL,
     StartHash INT           NOT NULL,
-    End TIMESTAMP(6)   NULL,
+    "End" TIMESTAMP(6)   NULL,
     PayrunJobId INT           NOT NULL,
     Forecast VARCHAR(128)  NULL,
     ParentJobId INT           NULL,
@@ -1298,7 +1290,7 @@ CREATE TABLE IF NOT EXISTS WageTypeCustomResult (
     Culture VARCHAR(128)  NOT NULL,
     Start TIMESTAMP(6)   NOT NULL,
     StartHash INT           NOT NULL,
-    End TIMESTAMP(6)   NOT NULL,
+    "End" TIMESTAMP(6)   NOT NULL,
     PayrunJobId INT           NOT NULL,
     Forecast VARCHAR(128)  NULL,
     ParentJobId INT           NULL,
@@ -1325,7 +1317,7 @@ CREATE TABLE IF NOT EXISTS WageTypeResult (
     Culture VARCHAR(128)  NOT NULL,
     Start TIMESTAMP(6)   NOT NULL,
     StartHash INT           NOT NULL,
-    End TIMESTAMP(6)   NOT NULL,
+    "End" TIMESTAMP(6)   NOT NULL,
     PayrunJobId INT           NOT NULL,
     Forecast VARCHAR(128)  NULL,
     ParentJobId INT           NULL,
@@ -2492,7 +2484,7 @@ BEGIN
         || ' CompanyCaseValue.NumericValue,'
         || ' CompanyCaseValue.Culture,'
         || ' CompanyCaseValue.Start,'
-        || ' CompanyCaseValue.End,'
+        || ' CompanyCaseValue."End",'
         || ' CompanyCaseValue.Forecast,'
         || ' CompanyCaseValue.Tags,'
         || ' CompanyCaseValue.Attributes,'
@@ -3703,7 +3695,7 @@ BEGIN
         || ' EmployeeCaseValue.NumericValue,'
         || ' EmployeeCaseValue.Culture,'
         || ' EmployeeCaseValue.Start,'
-        || ' EmployeeCaseValue.End,'
+        || ' EmployeeCaseValue."End",'
         || ' EmployeeCaseValue.Forecast,'
         || ' EmployeeCaseValue.Tags,'
         || ' EmployeeCaseValue.Attributes,'
@@ -3791,7 +3783,7 @@ BEGIN
         ecv.CaseFieldName, ecv.CaseFieldNameLocalizations,
         ecv.CaseSlot, ecv.CaseSlotLocalizations,
         ecv.ValueType, ecv.Value, ecv.NumericValue, ecv.Culture,
-        ecv.CaseRelation, ecv.CancellationDate, ecv.Start, ecv.End,
+        ecv.CaseRelation, ecv.CancellationDate, ecv.Start, ecv."End",
         ecv.Forecast, ecv.Tags, ecv.Attributes
     FROM EmployeeCaseValue ecv
     INNER JOIN Employee e ON e.Id = ecv.EmployeeId
@@ -3874,7 +3866,7 @@ BEGIN
         || ' GlobalCaseValue.NumericValue,'
         || ' GlobalCaseValue.Culture,'
         || ' GlobalCaseValue.Start,'
-        || ' GlobalCaseValue.End,'
+        || ' GlobalCaseValue."End",'
         || ' GlobalCaseValue.Forecast,'
         || ' GlobalCaseValue.Tags,'
         || ' GlobalCaseValue.Attributes,'
@@ -4039,7 +4031,7 @@ BEGIN
         || ' NationalCaseValue.NumericValue,'
         || ' NationalCaseValue.Culture,'
         || ' NationalCaseValue.Start,'
-        || ' NationalCaseValue.End,'
+        || ' NationalCaseValue."End",'
         || ' NationalCaseValue.Forecast,'
         || ' NationalCaseValue.Tags,'
         || ' NationalCaseValue.Attributes,'

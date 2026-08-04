@@ -54,7 +54,7 @@ BEGIN
         || ' CompanyCaseValue.NumericValue,'
         || ' CompanyCaseValue.Culture,'
         || ' CompanyCaseValue.Start,'
-        || ' CompanyCaseValue.End,'
+        || ' CompanyCaseValue."End",'
         || ' CompanyCaseValue.Forecast,'
         || ' CompanyCaseValue.Tags,'
         || ' CompanyCaseValue.Attributes,'

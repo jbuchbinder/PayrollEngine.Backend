@@ -54,7 +54,7 @@ BEGIN
         || ' GlobalCaseValue.NumericValue,'
         || ' GlobalCaseValue.Culture,'
         || ' GlobalCaseValue.Start,'
-        || ' GlobalCaseValue.End,'
+        || ' GlobalCaseValue."End",'
         || ' GlobalCaseValue.Forecast,'
         || ' GlobalCaseValue.Tags,'
         || ' GlobalCaseValue.Attributes,'

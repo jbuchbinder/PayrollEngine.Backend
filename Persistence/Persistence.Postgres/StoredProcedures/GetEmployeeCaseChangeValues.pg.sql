@@ -55,7 +55,7 @@ BEGIN
         || ' EmployeeCaseValue.NumericValue,'
         || ' EmployeeCaseValue.Culture,'
         || ' EmployeeCaseValue.Start,'
-        || ' EmployeeCaseValue.End,'
+        || ' EmployeeCaseValue."End",'
         || ' EmployeeCaseValue.Forecast,'
         || ' EmployeeCaseValue.Tags,'
         || ' EmployeeCaseValue.Attributes,'

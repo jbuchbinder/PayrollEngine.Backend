@@ -54,7 +54,7 @@ BEGIN
         || ' NationalCaseValue.NumericValue,'
         || ' NationalCaseValue.Culture,'
         || ' NationalCaseValue.Start,'
-        || ' NationalCaseValue.End,'
+        || ' NationalCaseValue."End",'
         || ' NationalCaseValue.Forecast,'
         || ' NationalCaseValue.Tags,'
         || ' NationalCaseValue.Attributes,'
