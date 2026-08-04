@@ -356,3 +356,70 @@ All functions and stored procedures use `DELIMITER $$` to avoid conflicts with
 ### Reserved words
 The following column names require backtick quoting in MySQL:
 `` `User` ``, `` `Key` ``, `` `Order` ``, `` `Schema` ``, `` `Binary` ``, `` `Case` ``
+
+---
+
+# PostgreSQL
+
+## Requirements
+
+- **PostgreSQL** 14+ (16 LTS recommended)
+- **Collation:** `en_US.UTF-8` (default on most installs)
+
+## Scripts and Files
+
+| File                     | Purpose                                                    |
+|--------------------------|------------------------------------------------------------|
+| `Create-Model.pg.sql`    | Creates the database, all tables, indexes, functions, and stored procedures |
+
+### SQL Source Files
+
+The authoritative source for functions and stored procedures is in the `Persistence.Postgres` project:
+
+- `Persistence.Postgres/Functions/` — 7 PL/pgSQL functions (`*.pg.sql`)
+- `Persistence.Postgres/StoredProcedures/` — 44 PL/pgSQL stored procedures (`*.pg.sql`)
+
+`Create-Model.pg.sql` embeds these files inline.
+
+## Key Differences to MySQL
+
+| MySQL                  | PostgreSQL                       |
+|------------------------|----------------------------------|
+| Backtick quoting       | Double-quote `"col"`             |
+| `AUTO_INCREMENT`       | `GENERATED ALWAYS AS IDENTITY`   |
+| `TINYINT(1)`           | `BOOLEAN`                        |
+| `DATETIME(6)`          | `TIMESTAMP(6)`                   |
+| `LONGTEXT`             | `TEXT`                           |
+| `LONGBLOB`             | `BYTEA`                          |
+| `DELIMITER $$`         | `LANGUAGE plpgsql AS $$ ... $$;` |
+| `ANALYZE TABLE`        | `ANALYZE`                        |
+
+## Container Setup
+
+```bash
+# PostgreSQL container for PayrollEngine
+docker run -d --name pe-postgres \
+  -e POSTGRES_DB=PayrollEngine \
+  -e POSTGRES_USER=payroll \
+  -e POSTGRES_PASSWORD=payroll \
+  -v ./Database/Create-Model.pg.sql:/docker-entrypoint-initdb.d/01-init.sql \
+  postgres:16-alpine
+
+# Or with docker-compose (see Database/docker/)
+```
+
+## Verification
+
+```sql
+SELECT COUNT(*) AS tables
+FROM information_schema.TABLES
+WHERE TABLE_SCHEMA = 'public' AND TABLE_TYPE = 'BASE TABLE';
+
+SELECT routine_type, COUNT(*) AS count
+FROM information_schema.ROUTINES
+WHERE routine_schema = 'public'
+GROUP BY routine_type;
+
+SELECT "MajorVersion", "MinorVersion", "SubVersion"
+FROM "Version" ORDER BY Id DESC LIMIT 1;
+```
