@@ -169,7 +169,7 @@ public class DbContext : IDbContext
     public bool CaseValueExtendedParameters => true;
 
     /// <inheritdoc />
-    public string QuoteIdentifier(string name) => $"\"{name}\"";
+    public string QuoteIdentifier(string name) => $"\"{name.ToLowerInvariant()}\"";
 
     /// <inheritdoc />
     public string LastInsertIdSql =>
