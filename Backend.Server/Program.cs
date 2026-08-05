@@ -18,6 +18,9 @@ public static class Program
     /// </summary>
     public static void Main(string[] args)
     {
+        // Npgsql: write DateTime values as timestamptz to match PostgreSQL DDL
+        AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
+
         // Bootstrap logger: active before Host.Build() so that startup exceptions
         // (e.g. DB version mismatch, missing connection string) are written to the
         // log file. Replaced by the full Serilog configuration from appsettings.json
