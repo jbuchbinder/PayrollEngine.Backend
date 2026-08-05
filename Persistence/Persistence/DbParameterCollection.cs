@@ -51,14 +51,14 @@ public class DbParameterCollection : DynamicParameters
     /// </summary>
     /// <param name="created">Created date</param>
     public void AddCreated(DateTime created) =>
-        Add(ObjectColumn.Created, created, DbType.DateTime2);
+        Add(ObjectColumn.Created, created);
 
     /// <summary>
     /// Add updated date parameter
     /// </summary>
     /// <param name="updated">Updated date</param>
     public void AddUpdated(DateTime updated) =>
-        Add(ObjectColumn.Updated, updated, DbType.DateTime2);
+        Add(ObjectColumn.Updated, updated);
 
     /// <summary>
     /// Add parameter
