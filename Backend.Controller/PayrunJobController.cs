@@ -143,6 +143,20 @@ public class PayrunJobController : Api.Controller.PayrunJobController
         await base.GetPayrunJobStatusAsync(tenantId, payrunJobId);
 
     /// <summary>
+    /// Get wage type results for a completed payrun job
+    /// </summary>
+    /// <param name="tenantId">The tenant id</param>
+    /// <param name="payrunJobId">The payrun job id</param>
+    /// <returns>The wage type results for the payrun job</returns>
+    [HttpGet("{payrunJobId}/results")]
+    [OkResponse]
+    [NotFoundResponse]
+    [ApiOperationId("GetPayrunJobResults")]
+    public override async Task<ActionResult<ApiObject.WageTypeResult[]>> GetPayrunJobResultsAsync(
+        int tenantId, int payrunJobId) =>
+        await base.GetPayrunJobResultsAsync(tenantId, payrunJobId);
+
+    /// <summary>
     /// Change the status of a payrun job
     /// </summary>
     /// <param name="tenantId">The tenant id</param>

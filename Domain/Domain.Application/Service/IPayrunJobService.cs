@@ -37,4 +37,13 @@ public interface IPayrunJobService : IChildApplicationService<IPayrunJobReposito
     /// Throws on unresolvable references (422) or duplicate jobs (409).
     /// </summary>
     Task<int> ImportPayrunJobSetsAsync(IDbContext context, int tenantId, IEnumerable<PayrunJobSet> jobSets);
+
+    /// <summary>
+    /// Get wage type results for a payrun job
+    /// </summary>
+    /// <param name="context">The database context</param>
+    /// <param name="tenantId">The tenant id</param>
+    /// <param name="payrunJobId">The payrun job id</param>
+    /// <returns>Wage type results for the payrun job</returns>
+    Task<IEnumerable<WageTypeResult>> GetWageTypeResultsByJobAsync(IDbContext context, int tenantId, int payrunJobId);
 }

@@ -240,4 +240,14 @@ public class PayrunJobService(PayrunJobServiceSettings settings) :
         transaction.Complete();
         return count;
     }
+
+    /// <inheritdoc />
+    public async Task<IEnumerable<WageTypeResult>> GetWageTypeResultsByJobAsync(IDbContext context, int tenantId, int payrunJobId)
+    {
+        var query = QueryFactory.NewEqualFilterQuery(new Dictionary<string, object>
+        {
+            { nameof(WageTypeResult.PayrunJobId), payrunJobId }
+        });
+        return await Settings.WageTypeResultRepository.QueryAsync(context, tenantId, query);
+    }
 }

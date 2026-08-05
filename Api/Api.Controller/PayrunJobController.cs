@@ -364,6 +364,32 @@ public abstract class PayrunJobController(ITenantService tenantService, IPayrunJ
     }
 
     /// <summary>
+    /// Get wage type results for a completed payrun job
+    /// </summary>
+    /// <param name="tenantId">The tenant id</param>
+    /// <param name="payrunJobId">The payrun job id</param>
+    /// <returns>The wage type results for the payrun job</returns>
+    public virtual async Task<ActionResult<ApiObject.WageTypeResult[]>> GetPayrunJobResultsAsync(int tenantId, int payrunJobId)
+    {
+        // tenant
+        var tenant = await ParentService.GetAsync(Runtime.DbContext, tenantId);
+        if (tenant == null)
+        {
+            return BadRequest($"Unknown tenant with id {tenantId}");
+        }
+
+        // payrun job
+        var payrunJob = await Service.GetAsync(Runtime.DbContext, tenantId, payrunJobId);
+        if (payrunJob == null)
+        {
+            return BadRequest($"Unknown payrun job with id {payrunJobId}");
+        }
+
+        var results = await Service.GetWageTypeResultsByJobAsync(Runtime.DbContext, tenantId, payrunJobId);
+        return new WageTypeResultMap().ToApi(results);
+    }
+
+    /// <summary>
     /// Change the status of a payrun job
     /// </summary>
     /// <param name="tenantId">The tenant id</param>
