@@ -37,7 +37,8 @@ public static class SqlQueryExtensions
             {
                 throw new ArgumentException(nameof(table));
             }
-            query?.Select(ToAllTableColumns(table));
+            // Use SelectRaw with quoted table prefix so PostgreSQL compiler emits "Table".* not "Table.*"
+            query?.SelectRaw($"\"{table}\".*");
             return query;
         }
 
@@ -70,7 +71,8 @@ public static class SqlQueryExtensions
         /// </summary>
         public SqlKata.Query RelatedWhere(string relatedTable, string relatedColumn, object value)
         {
-            query?.Where(relatedTable.ToTableColumn(relatedColumn), value);
+            // Use WhereRaw so PostgreSQL compiler emits "Table"."Col" not "Table.Col"
+            query?.WhereRaw($"\"{relatedTable}\".\"{relatedColumn}\" = ?", value);
             return query;
         }
 
@@ -79,7 +81,7 @@ public static class SqlQueryExtensions
         /// </summary>
         public SqlKata.Query RelatedWhereNullOrValue(string relatedTable, string relatedColumn, object value)
         {
-            query?.WhereNullOrValue(relatedTable.ToTableColumn(relatedColumn), value);
+            query?.WhereNullOrValue($"\"{relatedTable}\".\"{relatedColumn}\"", value);
             return query;
         }
 
@@ -94,7 +96,9 @@ public static class SqlQueryExtensions
         /// </summary>
         private SqlKata.Query LeftObjectJoin(string sourceTable, string sourceColumn, string targetTable, string targetColumn)
         {
-            query?.LeftJoin(targetTable, sourceTable.ToTableColumn(sourceColumn), targetTable.ToTableColumn(targetColumn));
+            // Use raw expressions so PostgreSQL compiler emits "Source"."Col" = "Target"."Col"
+            // rather than the broken single-identifier "Source.Col" = "Target.Col"
+            query?.Join(targetTable, j => j.WhereRaw($"\"{sourceTable}\".\"{sourceColumn}\" = \"{targetTable}\".\"{targetColumn}\""), "LEFT JOIN");
             return query;
         }
 
