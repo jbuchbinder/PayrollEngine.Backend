@@ -3,19 +3,20 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetCompanyCaseValues(
-    IN "p_parentId" INTEGER,
-    IN "p_sql" TEXT,
-    IN "p_attributes" TEXT
+    IN p_parentId   INTEGER,
+    IN p_sql        TEXT,
+    IN p_attributes TEXT
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 AS $$
 DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
-    v_attrSql  := BuildAttributeQuery('"CompanyCaseValue".Attributes', p_attributes);
-    v_pivotSql := 'CREATE TEMP TABLE CompanyCaseValuePivot AS SELECT "CompanyCaseValue".*'
+BEGIN
+    v_attrSql  := BuildAttributeQuery('CompanyCaseValue.Attributes', p_attributes);
+    v_pivotSql := 'CREATE TEMP TABLE CompanyCaseValuePivot AS SELECT CompanyCaseValue.*'
         || v_attrSql
-        || ' FROM "CompanyCaseValue" WHERE "CompanyCaseValue".TenantId = '
+        || ' FROM CompanyCaseValue WHERE CompanyCaseValue.TenantId = '
         || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS CompanyCaseValuePivot;
@@ -28,4 +29,5 @@ DECLARE
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS CompanyCaseValuePivot;
     RAISE;
+END;
 $$;

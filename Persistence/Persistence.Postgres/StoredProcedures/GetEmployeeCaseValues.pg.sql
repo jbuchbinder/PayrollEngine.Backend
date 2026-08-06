@@ -4,19 +4,20 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetEmployeeCaseValues(
-    IN "p_parentId" INTEGER,
-    IN "p_sql" TEXT,
-    IN "p_attributes" TEXT
+    IN p_parentId   INTEGER,
+    IN p_sql        TEXT,
+    IN p_attributes TEXT
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 AS $$
 DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
-    v_attrSql  := BuildAttributeQuery('"EmployeeCaseValue".Attributes', p_attributes);
-    v_pivotSql := 'CREATE TEMP TABLE EmployeeCaseValuePivot AS SELECT "EmployeeCaseValue".*'
+BEGIN
+    v_attrSql  := BuildAttributeQuery('EmployeeCaseValue.Attributes', p_attributes);
+    v_pivotSql := 'CREATE TEMP TABLE EmployeeCaseValuePivot AS SELECT EmployeeCaseValue.*'
         || v_attrSql
-        || ' FROM "EmployeeCaseValue" WHERE "EmployeeCaseValue".EmployeeId = '
+        || ' FROM EmployeeCaseValue WHERE EmployeeCaseValue.EmployeeId = '
         || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS EmployeeCaseValuePivot;
@@ -29,4 +30,5 @@ DECLARE
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS EmployeeCaseValuePivot;
     RAISE;
+END;
 $$;

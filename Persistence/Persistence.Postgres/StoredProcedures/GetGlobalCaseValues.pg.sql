@@ -4,19 +4,20 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetGlobalCaseValues(
-    IN "p_parentId" INTEGER,
-    IN "p_sql" TEXT,
-    IN "p_attributes" TEXT
+    IN p_parentId   INTEGER,
+    IN p_sql        TEXT,
+    IN p_attributes TEXT
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 AS $$
 DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
-    v_attrSql  := BuildAttributeQuery('"GlobalCaseValue".Attributes', p_attributes);
-    v_pivotSql := 'CREATE TEMP TABLE GlobalCaseValuePivot AS SELECT "GlobalCaseValue".*'
+BEGIN
+    v_attrSql  := BuildAttributeQuery('GlobalCaseValue.Attributes', p_attributes);
+    v_pivotSql := 'CREATE TEMP TABLE GlobalCaseValuePivot AS SELECT GlobalCaseValue.*'
         || v_attrSql
-        || ' FROM "GlobalCaseValue" WHERE "GlobalCaseValue".TenantId = '
+        || ' FROM GlobalCaseValue WHERE GlobalCaseValue.TenantId = '
         || p_parentId::TEXT;
 
     DROP TABLE IF EXISTS GlobalCaseValuePivot;
@@ -29,4 +30,5 @@ DECLARE
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS GlobalCaseValuePivot;
     RAISE;
+END;
 $$;
