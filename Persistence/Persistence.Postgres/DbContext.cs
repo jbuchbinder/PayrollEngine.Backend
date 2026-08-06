@@ -352,8 +352,75 @@ public class DbContext : IDbContext
         int? commandTimeout = null, CommandType? commandType = null)
     {
         using var lease = LeaseConnection();
-        var mappedParam = commandType == CommandType.StoredProcedure ? MapSpParameters(param) : param;
-        return await lease.Connection.QueryAsync<T>(sql, mappedParam,
+        if (commandType == CommandType.StoredProcedure)
+        {
+            return await QuerySpAsync<T>(lease.Connection, sql, param, commandTimeout);
+        }
+        return await lease.Connection.QueryAsync<T>(sql, param,
+            commandTimeout: commandTimeout ?? DefaultCommendTimeout,
+            commandType: commandType);
+    }
+
+    private async Task<IEnumerable<T>> QuerySpAsync<T>(IDbConnection conn, string spName,
+        object param, int? commandTimeout)
+    {
+        var callSql = BuildCallSql(spName, param);
+        return await ((NpgsqlConnection)conn).QueryAsync<T>(callSql, param,
+            commandTimeout: commandTimeout ?? DefaultCommendTimeout);
+    }
+
+    private static string BuildCallSql(string spName, object param)
+    {
+        if (param is not DbParameterCollection dbParams)
+        {
+            return $"CALL \"{spName}\"()";
+        }
+
+        var names = dbParams.ParameterNames.ToList();
+        var parts = new List<string>();
+        for (int i = 0; i < names.Count; i++)
+        {
+            var name = names[i];
+            var isReturnValue = name.StartsWith("@", StringComparison.Ordinal) &&
+                                name.Contains("return", StringComparison.OrdinalIgnoreCase);
+            if (isReturnValue) continue;
+
+            var cleanName = name.TrimStart('@');
+            var dbType = dbParams.GetParameterType(name) ?? DbType.String;
+            var pgType = MapDbTypeToPgCast(dbType);
+            parts.Add($"@{cleanName}::{pgType}");
+        }
+        return $"CALL \"{spName}\"({string.Join(", ", parts)})";
+    }
+
+    private static string MapDbTypeToPgCast(DbType dbType)
+    {
+        return dbType switch
+        {
+            DbType.Int32 => "integer",
+            DbType.Int64 => "bigint",
+            DbType.String or DbType.AnsiString => "text",
+            DbType.DateTime or DbType.DateTime2 => "timestamptz",
+            DbType.Decimal => "numeric",
+            DbType.Double => "double precision",
+            DbType.Boolean => "boolean",
+            DbType.Guid => "uuid",
+            _ => "text"
+        };
+    }
+
+    /// <inheritdoc />
+    public async Task<int> ExecuteAsync(string sql, object param = null,
+        int? commandTimeout = null, CommandType? commandType = null)
+    {
+        using var lease = LeaseConnection();
+        if (commandType == CommandType.StoredProcedure)
+        {
+            var callSql = BuildCallSql(sql, param);
+            return await lease.Connection.ExecuteAsync(callSql, param,
+                commandTimeout: commandTimeout ?? DefaultCommendTimeout);
+        }
+        return await lease.Connection.ExecuteAsync(sql, param,
             commandTimeout: commandTimeout ?? DefaultCommendTimeout,
             commandType: commandType);
     }
@@ -379,17 +446,6 @@ public class DbContext : IDbContext
     }
 
     /// <inheritdoc />
-    public async Task<int> ExecuteAsync(string sql, object param = null,
-        int? commandTimeout = null, CommandType? commandType = null)
-    {
-        using var lease = LeaseConnection();
-        var mappedParam = commandType == CommandType.StoredProcedure ? MapSpParameters(param) : param;
-        return await lease.Connection.ExecuteAsync(sql, mappedParam,
-            commandTimeout: commandTimeout ?? DefaultCommendTimeout,
-            commandType: commandType);
-    }
-
-    /// <inheritdoc />
     public async Task<T> ExecuteScalarAsync<T>(string sql, object param = null,
         int? commandTimeout = null, CommandType? commandType = null)
     {
@@ -399,48 +455,14 @@ public class DbContext : IDbContext
             commandType: commandType);
     }
 
-    /// <summary>
-    /// Remap DbParameterCollection keys to PostgreSQL stored procedure parameter names
-    /// (positional $1, $2... for Npgsql).
-    /// SQL Server SPs use @TenantId, PG SPs use positional parameters.
-    /// Skips output/return-value parameters.
-    /// </summary>
-    private static object MapSpParameters(object param)
+    /// <inheritdoc />
+    public async Task ExecuteNonQueryAsync(string sql, object param = null,
+        int? commandTimeout = null, CommandType? commandType = null)
     {
-        if (param is not DbParameterCollection dbParams)
-        {
-            return param;
-        }
-
-        var mapped = new DynamicParameters();
-        foreach (var name in dbParams.ParameterNames)
-        {
-            // skip return-value / output placeholders
-            var isReturnValue = name.StartsWith("@", StringComparison.Ordinal) &&
-                                name.Contains("return", StringComparison.OrdinalIgnoreCase);
-            if (isReturnValue)
-            {
-                continue;
-            }
-
-            // Strip leading "@" if present, use as-is for Npgsql positional parameters
-            var cleanName = name.TrimStart('@');
-
-            object value;
-            try { value = dbParams.Get<object>(name); }
-            catch { value = null; }
-
-            // SQL Server uses ##GlobalTempTable, PostgreSQL uses plain temp table names
-            if (value is string strValue)
-            {
-                value = strValue.Replace("##", string.Empty,
-                    StringComparison.OrdinalIgnoreCase);
-            }
-
-            var dbType = dbParams.GetParameterType(name);
-            mapped.Add(cleanName, value, dbType);
-        }
-        return mapped;
+        using var lease = LeaseConnection();
+        await lease.Connection.ExecuteAsync(sql, param,
+            commandTimeout: commandTimeout ?? DefaultCommendTimeout,
+            commandType: commandType);
     }
 
     #endregion
