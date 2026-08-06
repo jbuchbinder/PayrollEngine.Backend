@@ -353,13 +353,32 @@ public class DbContext : IDbContext
         int? commandTimeout = null, CommandType? commandType = null)
     {
         using var lease = LeaseConnection();
-        // Map parameters with proper Npgsql types for stored procedures
-        var mappedParam = (commandType == CommandType.StoredProcedure && param is DbParameterCollection dbParams)
-            ? MapSpParameters(dbParams)
-            : param;
-        return await lease.Connection.QueryAsync<T>(sql, mappedParam,
+        // Convert Get* query stored procs to SELECT * FROM function calls
+        // (PostgreSQL procedures don't return result sets via CALL in Npgsql)
+        if (commandType == CommandType.StoredProcedure && param is DbParameterCollection dbParams
+            && sql.StartsWith("Get", StringComparison.OrdinalIgnoreCase))
+        {
+            var funcSql = BuildFunctionCallSql(sql, dbParams);
+            return await lease.Connection.QueryAsync<T>(funcSql, param,
+                commandTimeout: commandTimeout ?? DefaultCommendTimeout,
+                commandType: CommandType.Text);
+        }
+        return await lease.Connection.QueryAsync<T>(sql, param,
             commandTimeout: commandTimeout ?? DefaultCommendTimeout,
             commandType: commandType);
+    }
+
+    private static string BuildFunctionCallSql(string spName, DbParameterCollection dbParams)
+    {
+        var parts = new List<string>();
+        foreach (var name in dbParams.ParameterNames)
+        {
+            if (name.Equals("@RETURN_VALUE", StringComparison.OrdinalIgnoreCase) ||
+                name.Equals("@returnValue", StringComparison.OrdinalIgnoreCase))
+                continue;
+            parts.Add(name.StartsWith('@') ? name : $"@{name}");
+        }
+        return $"SELECT * FROM {spName}({string.Join(", ", parts)})";
     }
 
     /// <summary>
