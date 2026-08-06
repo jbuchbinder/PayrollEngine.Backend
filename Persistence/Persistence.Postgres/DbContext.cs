@@ -8,6 +8,7 @@ using System.Transactions;
 using System.Collections.Concurrent;
 using Task = System.Threading.Tasks.Task;
 using Npgsql;
+using NpgsqlTypes;
 using Dapper;
 using PayrollEngine.Domain.Model;
 
@@ -352,13 +353,74 @@ public class DbContext : IDbContext
         int? commandTimeout = null, CommandType? commandType = null)
     {
         using var lease = LeaseConnection();
-        if (commandType == CommandType.StoredProcedure)
-        {
-            return await QuerySpAsync<T>(lease.Connection, sql, param, commandTimeout);
-        }
-        return await lease.Connection.QueryAsync<T>(sql, param,
+        // Map parameters with proper Npgsql types for stored procedures
+        var mappedParam = (commandType == CommandType.StoredProcedure && param is DbParameterCollection dbParams)
+            ? MapSpParameters(dbParams)
+            : param;
+        return await lease.Connection.QueryAsync<T>(sql, mappedParam,
             commandTimeout: commandTimeout ?? DefaultCommendTimeout,
             commandType: commandType);
+    }
+
+    /// <summary>
+    /// Convert SQL Server style parameters to Npgsql-typed DynamicParameters.
+    /// Ensures null values get the correct PostgreSQL type.
+    /// </summary>
+    private static object MapSpParameters(object param)
+    {
+        if (param is not DbParameterCollection dbParams || !dbParams.HasAny)
+        {
+            return param;
+        }
+
+        var mapped = new DynamicParameters();
+        foreach (var name in dbParams.ParameterNames)
+        {
+            if (name.Equals("@RETURN_VALUE", StringComparison.OrdinalIgnoreCase) ||
+                name.Equals("@returnValue", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            var cleanName = name.TrimStart('@');
+            var value = dbParams.Get<object>(name);
+            // Infer PostgreSQL type from CLR value type
+            var pgType = InferPgTypeFromValue(value);
+
+            // Add with explicit NpgsqlDbType to avoid 'unknown' type for NULLs
+            var npgsqlParam = new NpgsqlParameter(cleanName, value ?? DBNull.Value)
+            {
+                NpgsqlDbType = pgType,
+                Direction = ParameterDirection.Input
+            };
+            mapped.Add(cleanName, npgsqlParam.Value, npgsqlParam.DbType, npgsqlParam.Direction, npgsqlParam.Size);
+            // Npgsql reads NpgsqlDbType from the DbParameter — set it via reflection
+            var dynParams = typeof(DynamicParameters)
+                .GetProperty("Parameters", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance)?
+                .GetValue(mapped) as System.Collections.Generic.List<System.Data.IDbDataParameter>;
+            var paramList = dynParams;
+            if (paramList?.Count > 0)
+            {
+                (paramList[^1] as NpgsqlParameter)!.NpgsqlDbType = pgType;
+            }
+        }
+        return mapped;
+    }
+
+    private static NpgsqlTypes.NpgsqlDbType InferPgTypeFromValue(object value)
+    {
+        if (value == null || value == DBNull.Value)
+            return NpgsqlTypes.NpgsqlDbType.Text;
+        return value switch
+        {
+            int or long or short => NpgsqlTypes.NpgsqlDbType.Integer,
+            decimal or double or float => NpgsqlTypes.NpgsqlDbType.Numeric,
+            string => NpgsqlTypes.NpgsqlDbType.Text,
+            DateTime => NpgsqlTypes.NpgsqlDbType.Timestamp,
+            bool => NpgsqlTypes.NpgsqlDbType.Boolean,
+            Guid => NpgsqlTypes.NpgsqlDbType.Uuid,
+            _ => NpgsqlTypes.NpgsqlDbType.Text
+        };
     }
 
     private async Task<IEnumerable<T>> QuerySpAsync<T>(IDbConnection conn, string spName,
@@ -386,26 +448,28 @@ public class DbContext : IDbContext
             if (isReturnValue) continue;
 
             var cleanName = name.TrimStart('@');
-            // Try lookup with @ prefix first, then without (Dapper may strip @)
-            var dbType = dbParams.GetParameterType(name) ?? dbParams.GetParameterType(cleanName) ?? DbType.String;
-            var pgType = MapDbTypeToPgCast(dbType);
+            // Infer PostgreSQL type from the parameter value's CLR type
+            // (DbParameterCollection.GetParameterType is unreliable with Dapper)
+            object value = null;
+            try { value = dbParams.Get<object>(name); } catch { }
+            var pgType = InferPgType(value);
             parts.Add($"@{cleanName}::{pgType}");
         }
         return $"CALL {spName}({string.Join(", ", parts)})";
     }
 
-    private static string MapDbTypeToPgCast(DbType dbType)
+    private static string InferPgType(object value)
     {
-        return dbType switch
+        if (value == null || value == DBNull.Value)
+            return "text";
+        return value switch
         {
-            DbType.Int32 => "integer",
-            DbType.Int64 => "bigint",
-            DbType.String or DbType.AnsiString => "text",
-            DbType.DateTime or DbType.DateTime2 => "timestamp",
-            DbType.Decimal => "numeric",
-            DbType.Double => "double precision",
-            DbType.Boolean => "boolean",
-            DbType.Guid => "uuid",
+            int or long or short => "integer",
+            decimal or double or float => "numeric",
+            string => "text",
+            DateTime => "timestamp",
+            bool => "boolean",
+            Guid => "uuid",
             _ => "text"
         };
     }

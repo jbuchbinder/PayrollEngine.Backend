@@ -9,7 +9,7 @@ CREATE OR REPLACE PROCEDURE GetEmployeeCaseChangeValues(
     IN p_attributes TEXT,
     IN p_culture    TEXT
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
 DECLARE
     v_attrSql       TEXT;
@@ -17,7 +17,6 @@ DECLARE
     v_caseName      TEXT;
     v_caseFieldName TEXT;
     v_caseSlot      TEXT;
-BEGIN
     IF p_culture IS NULL THEN
         v_caseName      := '"EmployeeCaseValue".CaseName';
         v_caseFieldName := '"EmployeeCaseValue".CaseFieldName';
@@ -78,5 +77,4 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS EmployeeCaseChangeValuePivot;
     RAISE;
-END;
 $$;

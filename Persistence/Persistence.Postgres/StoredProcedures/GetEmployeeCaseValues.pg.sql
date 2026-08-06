@@ -8,12 +8,11 @@ CREATE OR REPLACE PROCEDURE GetEmployeeCaseValues(
     IN p_sql        TEXT,
     IN p_attributes TEXT
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
 DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
-BEGIN
     v_attrSql  := BuildAttributeQuery('"EmployeeCaseValue".Attributes', p_attributes);
     v_pivotSql := 'CREATE TEMP TABLE EmployeeCaseValuePivot AS SELECT "EmployeeCaseValue".*'
         || v_attrSql
@@ -30,5 +29,4 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS EmployeeCaseValuePivot;
     RAISE;
-END;
 $$;

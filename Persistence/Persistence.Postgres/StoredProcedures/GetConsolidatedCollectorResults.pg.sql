@@ -14,14 +14,13 @@ CREATE OR REPLACE PROCEDURE GetConsolidatedCollectorResults(
     IN p_noRetro             BOOLEAN,
     IN p_excludeParentJobId  INTEGER
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
 DECLARE
     v_collectorNameHash INTEGER;
     v_collectorCount    INTEGER;
     v_startHash         INTEGER;
     v_startHashCount    INTEGER;
-BEGIN
     v_collectorCount := CASE WHEN p_collectorNameHashes IS NULL THEN 0 ELSE jsonb_array_length(p_collectorNameHashes::jsonb) END;
     v_startHashCount := CASE WHEN p_periodStartHashes IS NULL   THEN 0 ELSE jsonb_array_length(p_periodStartHashes::jsonb) END;
 
@@ -36,36 +35,35 @@ BEGIN
     END IF;
 
         WITH Winners AS (
-        SELECT r.Id,
+        SELECT r."Id",
             ROW_NUMBER() OVER (
-                PARTITION BY r.CollectorNameHash, r.Start
-                ORDER BY r.Created DESC, r.Id DESC
-            ) AS RowNumber
+                PARTITION BY r."CollectorNameHash", r."Start"
+                ORDER BY r."Created" DESC, r."Id" DESC
+            ) AS "RowNumber"
         FROM "CollectorResult" r
-        WHERE r.TenantId = p_tenantId
-          AND r.EmployeeId = p_employeeId
+        WHERE r."TenantId" = p_tenantId
+          AND r."EmployeeId" = p_employeeId
           AND (v_startHashCount = 0 OR
-               (v_startHashCount = 1 AND r.StartHash = v_startHash) OR
-               (v_startHashCount > 1 AND r.StartHash IN (
+               (v_startHashCount = 1 AND r."StartHash" = v_startHash) OR
+               (v_startHashCount > 1 AND r."StartHash" IN (
                    SELECT CAST(jt.val AS INTEGER)
                    FROM jsonb_array_elements_text(p_periodStartHashes::jsonb) AS jt(val))))
-          AND (p_divisionId IS NULL OR r.DivisionId = p_divisionId)
+          AND (p_divisionId IS NULL OR r."DivisionId" = p_divisionId)
           AND (p_collectorNameHashes IS NULL OR v_collectorCount = 0
-               OR (v_collectorCount = 1 AND r.CollectorNameHash = v_collectorNameHash)
-               OR (v_collectorCount > 1 AND r.CollectorNameHash IN (
+               OR (v_collectorCount = 1 AND r."CollectorNameHash" = v_collectorNameHash)
+               OR (v_collectorCount > 1 AND r."CollectorNameHash" IN (
                    SELECT CAST(jt.val AS INTEGER)
                    FROM jsonb_array_elements_text(p_collectorNameHashes::jsonb) AS jt(val))))
-          AND (p_evaluationDate IS NULL OR r.Created <= p_evaluationDate)
-          AND (p_jobStatus IS NULL OR r.PayrunJobId IN (
-                   SELECT pj.Id FROM "PayrunJob" pj WHERE (pj.JobStatus & p_jobStatus) = pj.JobStatus))
-          AND (r.Forecast IS NULL OR r.Forecast = p_forecast)
-          AND (p_noRetro = FALSE OR r.ParentJobId IS NULL)
-          AND (p_excludeParentJobId IS NULL OR r.ParentJobId IS NULL
-               OR r.ParentJobId <> p_excludeParentJobId)
+          AND (p_evaluationDate IS NULL OR r."Created" <= p_evaluationDate)
+          AND (p_jobStatus IS NULL OR r."PayrunJobId" IN (
+                   SELECT pj."Id" FROM "PayrunJob" pj WHERE (pj."JobStatus" & p_jobStatus) = pj."JobStatus"))
+          AND (r."Forecast" IS NULL OR r."Forecast" = p_forecast)
+          AND (p_noRetro = FALSE OR r."ParentJobId" IS NULL)
+          AND (p_excludeParentJobId IS NULL OR r."ParentJobId" IS NULL
+               OR r."ParentJobId" <> p_excludeParentJobId)
     )
     SELECT r.*
     FROM "CollectorResult" r
-    INNER JOIN Winners w ON w.Id = r.Id
-    WHERE w.RowNumber = 1;
-END;
+    INNER JOIN Winners w ON w."Id" = r."Id"
+    WHERE w."RowNumber" = 1;
 $$;

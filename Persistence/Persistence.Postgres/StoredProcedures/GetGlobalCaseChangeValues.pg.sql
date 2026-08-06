@@ -8,7 +8,7 @@ CREATE OR REPLACE PROCEDURE GetGlobalCaseChangeValues(
     IN p_attributes TEXT,
     IN p_culture    TEXT
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
 DECLARE
     v_attrSql       TEXT;
@@ -16,7 +16,6 @@ DECLARE
     v_caseName      TEXT;
     v_caseFieldName TEXT;
     v_caseSlot      TEXT;
-BEGIN
     IF p_culture IS NULL THEN
         v_caseName      := '"GlobalCaseValue".CaseName';
         v_caseFieldName := '"GlobalCaseValue".CaseFieldName';
@@ -76,5 +75,4 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS GlobalCaseChangeValuePivot;
     RAISE;
-END;
 $$;

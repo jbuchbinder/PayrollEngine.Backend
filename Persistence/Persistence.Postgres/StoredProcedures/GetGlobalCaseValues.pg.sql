@@ -8,12 +8,11 @@ CREATE OR REPLACE PROCEDURE GetGlobalCaseValues(
     IN p_sql        TEXT,
     IN p_attributes TEXT
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
 DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
-BEGIN
     v_attrSql  := BuildAttributeQuery('"GlobalCaseValue".Attributes', p_attributes);
     v_pivotSql := 'CREATE TEMP TABLE GlobalCaseValuePivot AS SELECT "GlobalCaseValue".*'
         || v_attrSql
@@ -30,5 +29,4 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS GlobalCaseValuePivot;
     RAISE;
-END;
 $$;

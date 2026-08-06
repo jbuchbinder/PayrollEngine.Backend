@@ -69,8 +69,9 @@ COPY Database/Create-Model.sql /sql/ModelCreate.sql
 COPY Database/Update-Model.sql /sql/ModelUpdate.sql
 COPY Database/Create-Model.pg.sql /sql/ModelCreate.pg.sql
 COPY Database/Create-Model.mysql.sql /sql/ModelCreate.mysql.sql
-# Copy PostgreSQL stored procedures for auto-creation on startup
+# Copy PostgreSQL stored procedures and functions for auto-creation on startup
 COPY Persistence/Persistence.Postgres/StoredProcedures/ /app/stored-procedures/
+COPY Persistence/Persistence.Postgres/Functions/ /app/pg-functions/
 COPY entrypoint.sh /app/entrypoint.sh
 RUN chmod +x /app/entrypoint.sh
 ENTRYPOINT ["/app/entrypoint.sh"]

@@ -51,4 +51,24 @@ for f in /app/stored-procedures/*.pg.sql; do
 done
 
 echo "PE startup: $LOADED stored procedures loaded, $FAILED failed"
+
+# Load PostgreSQL functions
+FLOADED=0
+FFAILED=0
+for f in /app/pg-functions/*.pg.sql; do
+  if [ -f "$f" ]; then
+    if psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=1 -f "$f" > /dev/null 2>&1; then
+      FLOADED=$((FLOADED + 1))
+    else
+      if psql -h "$PGHOST" -p "$PGPORT" -U "$PGUSER" -d "$PGDATABASE" -v ON_ERROR_STOP=0 -f "$f" > /dev/null 2>&1; then
+        FLOADED=$((FLOADED + 1))
+      else
+        FFAILED=$((FFAILED + 1))
+        echo "  ERROR: function $(basename $f) failed after retry"
+      fi
+    fi
+  fi
+done
+echo "PE startup: $FLOADED functions loaded, $FFAILED failed"
+
 exec dotnet PayrollEngine.Backend.Server.dll

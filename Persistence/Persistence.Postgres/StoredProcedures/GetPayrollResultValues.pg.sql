@@ -11,13 +11,12 @@ CREATE OR REPLACE PROCEDURE GetPayrollResultValues(
     IN p_divisionId INTEGER,
     IN p_attributes TEXT
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
 DECLARE
     v_attrNames TEXT;
     v_pivotSql  TEXT;
     v_where     TEXT;
-BEGIN
     v_attrNames := GetAttributeNames(p_attributes);
 
     -- Build WHERE clause
@@ -39,20 +38,20 @@ BEGIN
         || ' "PayrollResult".TenantId,'
         || ' "PayrollResult".Id AS PayrollResultId,'
         || ' "PayrollResult".Created,'
-        || ' PayrollValue.ResultKind,'
-        || ' PayrollValue.ResultId,'
-        || ' PayrollValue.ResultParentId,'
-        || ' PayrollValue.ResultNumber,'
-        || ' PayrollValue.KindName,'
-        || ' PayrollValue.ResultCreated,'
-        || ' PayrollValue.ResultStart,'
-        || ' PayrollValue.ResultEnd,'
-        || ' PayrollValue.ResultType,'
-        || ' PayrollValue.ResultValue,'
-        || ' PayrollValue.ResultNumericValue,'
-        || ' PayrollValue.ResultCulture,'
-        || ' PayrollValue.ResultTags,'
-        || ' PayrollValue.Attributes,'
+        || ' PayrollValue."ResultKind",'
+        || ' PayrollValue."ResultId",'
+        || ' PayrollValue."ResultParentId",'
+        || ' PayrollValue."ResultNumber",'
+        || ' PayrollValue."KindName",'
+        || ' PayrollValue."ResultCreated",'
+        || ' PayrollValue."ResultStart",'
+        || ' PayrollValue."ResultEnd",'
+        || ' PayrollValue."ResultType",'
+        || ' PayrollValue."ResultValue",'
+        || ' PayrollValue."ResultNumericValue",'
+        || ' PayrollValue."ResultCulture",'
+        || ' PayrollValue."ResultTags",'
+        || ' PayrollValue."Attributes",'
         || ' "PayrunJob".Id AS JobId,'
         || ' "PayrunJob".Name AS JobName,'
         || ' "PayrunJob".CreatedReason AS JobReason,'
@@ -172,7 +171,7 @@ BEGIN
         || BuildAttributeQuery(NULL, p_attributes)
         || ' FROM "PayrunResult"'
         || ') PayrollValue'
-        || ' LEFT JOIN "PayrollResult" ON "PayrollResult".Id = PayrollValue.PayrollResultId'
+        || ' LEFT JOIN "PayrollResult" ON "PayrollResult".Id = PayrollValue."PayrollResultId"'
         || ' LEFT JOIN "PayrunJob" ON "PayrollResult".PayrunJobId = "PayrunJob".Id'
         || ' LEFT JOIN "Payrun" ON "PayrunJob".PayrunId = "Payrun".Id'
         || ' LEFT JOIN "Employee" ON "PayrollResult".EmployeeId = "Employee".Id'
@@ -191,5 +190,4 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS PayrollResultPivot;
     RAISE;
-END;
 $$;

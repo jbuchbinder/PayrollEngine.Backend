@@ -13,24 +13,23 @@ CREATE OR REPLACE PROCEDURE GetDerivedCollectors(
     IN p_excludeClusters TEXT,
     IN p_collectorNames  TEXT
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
-BEGIN
         WITH DerivedRegulations AS (
         SELECT r."Id", pl."Level", pl."Priority",
             ROW_NUMBER() OVER (
                 PARTITION BY pl."Id", r."Name"
                 ORDER BY r."ValidFrom" DESC, r."Created" DESC
-            ) AS RowNumber
+            ) AS "RowNumber"
         FROM "PayrollLayer" pl
         INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
         WHERE r."Status" = 0
-          AND (r."TenantId" = p_tenantId OR r."SharedRegulation" = 1)
+          AND (r."TenantId" = p_tenantId OR r."SharedRegulation" = true)
           AND r."Created" <= p_createdBefore
           AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= p_regulationDate)
           AND pl."Status" = 0 AND pl."PayrollId" = p_payrollId
     ),
-    Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE RowNumber = 1)
+    Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
     SELECT
         reg."Id" AS RegulationId, reg."Level", reg."Priority",
         co."Id", co."Status", co."Created", co."Updated", co."RegulationId",
@@ -46,11 +45,10 @@ BEGIN
     WHERE co."Status" = 0
       AND co."Created" <= p_createdBefore
       AND ((p_includeClusters IS NULL AND p_excludeClusters IS NULL)
-           OR "IsMatchingCluster"(p_includeClusters, p_excludeClusters, co."Clusters") = 1)
+           OR IsMatchingCluster(p_includeClusters, p_excludeClusters, co."Clusters") = 1)
       AND (p_collectorNames IS NULL
            OR LOWER(co."Name") IN (
                SELECT LOWER(jt.val)
                FROM jsonb_array_elements_text(p_collectorNames::jsonb) AS jt(val)))
     ORDER BY co."Name", reg."Level" DESC, reg."Priority" DESC;
-END;
 $$;

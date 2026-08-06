@@ -14,16 +14,16 @@
 -- =============================================================================
 
 CREATE OR REPLACE FUNCTION IsMatchingCluster(
-    p_includeClusters VARCHAR(4000),
-    p_excludeClusters VARCHAR(4000),
-    p_testClusters    VARCHAR(4000)
+    p_includeClusters TEXT,
+    p_excludeClusters TEXT,
+    p_testClusters    TEXT
 )
 RETURNS INTEGER
 LANGUAGE plpgsql
 STABLE
 AS $$
 DECLARE
-    v_testClusters VARCHAR(4000);
+    v_testClusters TEXT;
 BEGIN
     v_testClusters := COALESCE(p_testClusters, '[]');
 

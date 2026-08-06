@@ -7,12 +7,11 @@ CREATE OR REPLACE PROCEDURE GetNationalCaseValues(
     IN p_sql        TEXT,
     IN p_attributes TEXT
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
 DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
-BEGIN
     v_attrSql  := BuildAttributeQuery('"NationalCaseValue".Attributes', p_attributes);
     v_pivotSql := 'CREATE TEMP TABLE NationalCaseValuePivot AS SELECT "NationalCaseValue".*'
         || v_attrSql
@@ -29,5 +28,4 @@ BEGIN
 EXCEPTION WHEN OTHERS THEN
     DROP TABLE IF EXISTS NationalCaseValuePivot;
     RAISE;
-END;
 $$;

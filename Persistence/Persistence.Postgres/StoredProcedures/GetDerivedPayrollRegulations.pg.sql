@@ -10,38 +10,36 @@ CREATE OR REPLACE PROCEDURE GetDerivedPayrollRegulations(
     IN p_regulationDate TIMESTAMP(6),
     IN p_createdBefore  TIMESTAMP(6)
 )
-LANGUAGE plpgsql
+LANGUAGE sql
 AS $$
-BEGIN
         WITH DerivedRegulations AS (
-        SELECT r.Id, pl.Level, pl.Priority,
+        SELECT r."Id", pl."Level", pl."Priority",
             ROW_NUMBER() OVER (
-                PARTITION BY pl.Id, r.Name
-                ORDER BY r.ValidFrom DESC, r.Created DESC
-            ) AS RowNumber
+                PARTITION BY pl."Id", r."Name"
+                ORDER BY r."ValidFrom" DESC, r."Created" DESC
+            ) AS "RowNumber"
         FROM "PayrollLayer" pl
-        INNER JOIN "Regulation" r ON pl.RegulationName = r.Name
-        WHERE r.Status = 0
+        INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
+        WHERE r."Status" = 0
           AND (
-            r.TenantId = p_tenantId
+            r."TenantId" = p_tenantId
             OR (
-              r.SharedRegulation = 1
+              r."SharedRegulation" = true
               AND EXISTS (
                 SELECT 1 FROM "RegulationShare" rs
-                WHERE rs.ProviderRegulationId = r.Id
-                  AND rs.ConsumerTenantId     = p_tenantId
-                  AND rs.IsolationLevel       >= 3
+                WHERE rs."ProviderRegulationId" = r."Id"
+                  AND rs."ConsumerTenantId"     = p_tenantId
+                  AND rs."IsolationLevel"       >= 3
               )
             )
           )
-          AND r.Created <= p_createdBefore
-          AND (r.ValidFrom IS NULL OR r.ValidFrom <= p_regulationDate)
-          AND pl.Status = 0 AND pl.PayrollId = p_payrollId
+          AND r."Created" <= p_createdBefore
+          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= p_regulationDate)
+          AND pl."Status" = 0 AND pl."PayrollId" = p_payrollId
     ),
-    Regulations AS (SELECT Id, Level, Priority FROM DerivedRegulations WHERE RowNumber = 1)
-    SELECT r.*, reg.Level, reg.Priority
+    Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
+    SELECT r.*, reg."Level", reg."Priority"
     FROM "Regulation" r
-    INNER JOIN Regulations reg ON r.Id = reg.Id
-    ORDER BY reg.Level DESC, reg.Priority DESC;
-END;
+    INNER JOIN Regulations reg ON r."Id" = reg."Id"
+    ORDER BY reg."Level" DESC, reg."Priority" DESC;
 $$;
