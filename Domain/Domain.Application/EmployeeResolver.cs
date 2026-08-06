@@ -74,8 +74,8 @@ internal sealed class EmployeeResolver
                     DivisionId = context.Division.Id,
                     Filter = $"{nameof(Employee.Identifier)} eq '{employeeIdentifier}'"
                 };
-                var selectedEmployees = (await Settings.EmployeeRepository.QueryAsync(Settings.DbContext, Tenant.Id, query)).ToList();
-                if (selectedEmployees.Count != 1)
+                var selectedEmployees = (await Settings.EmployeeRepository.QueryAsync(Settings.DbContext, Tenant.Id, query)).DistinctBy(e => e.Id).ToList();
+                if (selectedEmployees.Count == 0)
                 {
                     throw new PayrunException($"Unknown employee with identifier {employeeIdentifier}");
                 }
@@ -105,7 +105,7 @@ internal sealed class EmployeeResolver
             Status = ObjectStatus.Active,
             DivisionId = context.Division.Id
         };
-        employees = (await Settings.EmployeeRepository.QueryAsync(Settings.DbContext, Tenant.Id, allQuery)).ToList();
+        employees = (await Settings.EmployeeRepository.QueryAsync(Settings.DbContext, Tenant.Id, allQuery)).DistinctBy(e => e.Id).ToList();
 
         // employee available expression
         if (employees.Any() && !string.IsNullOrWhiteSpace(Payrun.EmployeeAvailableExpression))
