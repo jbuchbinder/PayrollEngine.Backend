@@ -386,7 +386,8 @@ public class DbContext : IDbContext
             if (isReturnValue) continue;
 
             var cleanName = name.TrimStart('@');
-            var dbType = dbParams.GetParameterType(name) ?? DbType.String;
+            // Try lookup with @ prefix first, then without (Dapper may strip @)
+            var dbType = dbParams.GetParameterType(name) ?? dbParams.GetParameterType(cleanName) ?? DbType.String;
             var pgType = MapDbTypeToPgCast(dbType);
             parts.Add($"@{cleanName}::{pgType}");
         }
