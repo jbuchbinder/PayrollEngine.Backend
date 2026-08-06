@@ -3,10 +3,10 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetGlobalCaseChangeValues(
-    IN p_parentId   INTEGER,
-    IN p_sql        TEXT,
-    IN p_attributes TEXT,
-    IN p_culture    TEXT
+    IN "p_parentId" INTEGER,
+    IN "p_sql" TEXT,
+    IN "p_attributes" TEXT,
+    IN "p_culture" TEXT
 )
 LANGUAGE sql
 AS $$

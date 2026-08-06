@@ -4,11 +4,11 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetEmployeeCaseValuesByTenant(
-    IN p_tenantId       INTEGER,
-    IN p_valueDate      TIMESTAMP(6),
-    IN p_evaluationDate TIMESTAMP(6),
-    IN p_fieldNames     TEXT,
-    IN p_forecast       TEXT
+    IN "tenantId" INTEGER,
+    IN "p_valueDate" TIMESTAMP(6),
+    IN "p_evaluationDate" TIMESTAMP(6),
+    IN "p_fieldNames" TEXT,
+    IN "p_forecast" TEXT
 )
 LANGUAGE sql
 AS $$
@@ -23,7 +23,7 @@ AS $$
         ecv."Forecast", ecv."Tags", ecv."Attributes"
     FROM "EmployeeCaseValue" ecv
     INNER JOIN "Employee" e ON e."Id" = ecv."EmployeeId"
-    WHERE e."TenantId" = p_tenantId
+    WHERE e."TenantId" = "tenantId"
       AND e."Status" = 0
       AND ecv."CancellationDate" IS NULL
       AND (p_evaluationDate IS NULL OR ecv."Created" <= p_evaluationDate)

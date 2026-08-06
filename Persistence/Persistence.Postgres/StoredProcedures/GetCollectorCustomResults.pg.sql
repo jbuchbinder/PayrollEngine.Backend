@@ -3,17 +3,17 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetCollectorCustomResults(
-    IN p_tenantId            INTEGER,
-    IN p_employeeId          INTEGER,
-    IN p_divisionId          INTEGER,
-    IN p_payrunJobId         INTEGER,
-    IN p_parentPayrunJobId   INTEGER,
-    IN p_collectorNameHashes TEXT,
-    IN p_periodStart         TIMESTAMP(6),
-    IN p_periodEnd           TIMESTAMP(6),
-    IN p_jobStatus           INTEGER,
-    IN p_forecast            TEXT,
-    IN p_evaluationDate      TIMESTAMP(6)
+    IN "tenantId" INTEGER,
+    IN "employeeId" INTEGER,
+    IN "p_divisionId" INTEGER,
+    IN "payrunJobId" INTEGER,
+    IN "p_parentPayrunJobId" INTEGER,
+    IN "p_collectorNameHashes" TEXT,
+    IN "p_periodStart" TIMESTAMP(6),
+    IN "p_periodEnd" TIMESTAMP(6),
+    IN "p_jobStatus" INTEGER,
+    IN "p_forecast" TEXT,
+    IN "p_evaluationDate" TIMESTAMP(6)
 )
 LANGUAGE sql
 AS $$
@@ -31,10 +31,10 @@ DECLARE
 
         SELECT ccr.*
     FROM "CollectorCustomResult" ccr
-    WHERE ccr."TenantId" = p_tenantId
-      AND ccr."EmployeeId" = p_employeeId
+    WHERE ccr."TenantId" = "tenantId"
+      AND ccr."EmployeeId" = "employeeId"
       AND (p_divisionId IS NULL        OR ccr."DivisionId" = p_divisionId)
-      AND (p_payrunJobId IS NULL       OR ccr."PayrunJobId" = p_payrunJobId)
+      AND ("payrunJobId" IS NULL       OR ccr."PayrunJobId" = "payrunJobId")
       AND (p_parentPayrunJobId IS NULL OR ccr."ParentJobId" = p_parentPayrunJobId)
       AND (p_collectorNameHashes IS NULL OR v_collectorCount = 0
            OR (v_collectorCount = 1 AND ccr."CollectorNameHash" = v_collectorNameHash)

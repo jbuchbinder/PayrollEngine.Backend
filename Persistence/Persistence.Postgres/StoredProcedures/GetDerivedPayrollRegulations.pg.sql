@@ -5,10 +5,10 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedPayrollRegulations(
-    IN p_tenantId       INTEGER,
-    IN p_payrollId      INTEGER,
-    IN p_regulationDate TIMESTAMP(6),
-    IN p_createdBefore  TIMESTAMP(6)
+    IN "tenantId" INTEGER,
+    IN "payrollId" INTEGER,
+    IN "regulationDate" TIMESTAMP(6),
+    IN "createdBefore" TIMESTAMP(6)
 )
 LANGUAGE sql
 AS $$
@@ -22,20 +22,20 @@ AS $$
         INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
         WHERE r."Status" = 0
           AND (
-            r."TenantId" = p_tenantId
+            r."TenantId" = "tenantId"
             OR (
               r."SharedRegulation" = true
               AND EXISTS (
                 SELECT 1 FROM "RegulationShare" rs
                 WHERE rs."ProviderRegulationId" = r."Id"
-                  AND rs."ConsumerTenantId"     = p_tenantId
+                  AND rs."ConsumerTenantId"     = "tenantId"
                   AND rs."IsolationLevel"       >= 3
               )
             )
           )
-          AND r."Created" <= p_createdBefore
-          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= p_regulationDate)
-          AND pl."Status" = 0 AND pl."PayrollId" = p_payrollId
+          AND r."Created" <= "createdBefore"
+          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= "regulationDate")
+          AND pl."Status" = 0 AND pl."PayrollId" = "payrollId"
     ),
     Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
     SELECT r.*, reg."Level", reg."Priority"

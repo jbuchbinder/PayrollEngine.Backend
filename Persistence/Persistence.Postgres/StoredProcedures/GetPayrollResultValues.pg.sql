@@ -5,11 +5,11 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetPayrollResultValues(
-    IN p_parentId   INTEGER,
-    IN p_sql        TEXT,
-    IN p_employeeId INTEGER,
-    IN p_divisionId INTEGER,
-    IN p_attributes TEXT
+    IN "p_parentId" INTEGER,
+    IN "p_sql" TEXT,
+    IN "employeeId" INTEGER,
+    IN "p_divisionId" INTEGER,
+    IN "p_attributes" TEXT
 )
 LANGUAGE sql
 AS $$
@@ -21,12 +21,12 @@ DECLARE
 
     -- Build WHERE clause
     v_where := '';
-    IF p_employeeId IS NOT NULL OR p_divisionId IS NOT NULL THEN
+    IF "employeeId" IS NOT NULL OR p_divisionId IS NOT NULL THEN
         v_where := ' WHERE ';
-        IF p_employeeId IS NOT NULL THEN
-            v_where := v_where || '"Employee".Id = ' || p_employeeId::TEXT;
+        IF "employeeId" IS NOT NULL THEN
+            v_where := v_where || '"Employee".Id = ' || "employeeId"::TEXT;
         END IF;
-        IF p_employeeId IS NOT NULL AND p_divisionId IS NOT NULL THEN
+        IF "employeeId" IS NOT NULL AND p_divisionId IS NOT NULL THEN
             v_where := v_where || ' AND ';
         END IF;
         IF p_divisionId IS NOT NULL THEN

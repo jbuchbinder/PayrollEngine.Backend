@@ -4,15 +4,15 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedCases(
-    IN p_tenantId        INTEGER,
-    IN p_payrollId       INTEGER,
-    IN p_regulationDate  TIMESTAMP(6),
-    IN p_createdBefore   TIMESTAMP(6),
-    IN p_caseType        INTEGER,
-    IN p_caseNames       TEXT,
-    IN p_includeClusters TEXT,
-    IN p_excludeClusters TEXT,
-    IN p_hidden          BOOLEAN
+    IN "tenantId" INTEGER,
+    IN "payrollId" INTEGER,
+    IN "regulationDate" TIMESTAMP(6),
+    IN "createdBefore" TIMESTAMP(6),
+    IN "caseType" INTEGER,
+    IN "caseNames" TEXT,
+    IN "includeClusters" TEXT,
+    IN "excludeClusters" TEXT,
+    IN "hidden" BOOLEAN
 )
 LANGUAGE sql
 AS $$
@@ -25,10 +25,10 @@ AS $$
         FROM "PayrollLayer" pl
         INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
         WHERE r."Status" = 0
-          AND (r."TenantId" = p_tenantId OR r."SharedRegulation" = true)
-          AND r."Created" <= p_createdBefore
-          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= p_regulationDate)
-          AND pl."Status" = 0 AND pl."PayrollId" = p_payrollId
+          AND (r."TenantId" = "tenantId" OR r."SharedRegulation" = true)
+          AND r."Created" <= "createdBefore"
+          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= "regulationDate")
+          AND pl."Status" = 0 AND pl."PayrollId" = "payrollId"
     ),
     Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
     SELECT
@@ -46,14 +46,14 @@ AS $$
     FROM "Case" c
     INNER JOIN Regulations reg ON c."RegulationId" = reg."Id"
     WHERE c."Status" = 0
-      AND c."Created" <= p_createdBefore
-      AND (p_hidden IS NULL OR c."Hidden" = p_hidden)
-      AND (p_caseType IS NULL OR c."CaseType" = p_caseType)
-      AND ((p_includeClusters IS NULL AND p_excludeClusters IS NULL)
-           OR IsMatchingCluster(p_includeClusters, p_excludeClusters, c."Clusters") = 1)
-      AND (p_caseNames IS NULL
+      AND c."Created" <= "createdBefore"
+      AND ("hidden" IS NULL OR c."Hidden" = "hidden")
+      AND ("caseType" IS NULL OR c."CaseType" = "caseType")
+      AND (("includeClusters" IS NULL AND "excludeClusters" IS NULL)
+           OR IsMatchingCluster("includeClusters", "excludeClusters", c."Clusters") = 1)
+      AND ("caseNames" IS NULL
            OR LOWER(c."Name") IN (
                SELECT LOWER(jt.val)
-               FROM jsonb_array_elements_text(p_caseNames::jsonb) AS jt(val)))
+               FROM jsonb_array_elements_text("caseNames"::jsonb) AS jt(val)))
     ORDER BY reg."Level" DESC, reg."Priority" DESC;
 $$;

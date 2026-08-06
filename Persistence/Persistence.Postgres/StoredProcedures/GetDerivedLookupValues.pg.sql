@@ -5,12 +5,12 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedLookupValues(
-    IN p_tenantId       INTEGER,
-    IN p_payrollId      INTEGER,
-    IN p_regulationDate TIMESTAMP(6),
-    IN p_createdBefore  TIMESTAMP(6),
-    IN p_lookupNames    TEXT,
-    IN p_lookupKeys     TEXT
+    IN "tenantId" INTEGER,
+    IN "payrollId" INTEGER,
+    IN "regulationDate" TIMESTAMP(6),
+    IN "createdBefore" TIMESTAMP(6),
+    IN "p_lookupNames" TEXT,
+    IN "p_lookupKeys" TEXT
 )
 LANGUAGE sql
 AS $$
@@ -23,10 +23,10 @@ AS $$
         FROM "PayrollLayer" pl
         INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
         WHERE r."Status" = 0
-          AND (r."TenantId" = p_tenantId OR r."SharedRegulation" = true)
-          AND r."Created" <= p_createdBefore
-          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= p_regulationDate)
-          AND pl."Status" = 0 AND pl."PayrollId" = p_payrollId
+          AND (r."TenantId" = "tenantId" OR r."SharedRegulation" = true)
+          AND r."Created" <= "createdBefore"
+          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= "regulationDate")
+          AND pl."Status" = 0 AND pl."PayrollId" = "payrollId"
     ),
     Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
     SELECT
@@ -36,7 +36,7 @@ AS $$
     INNER JOIN "Lookup" lk ON lv."LookupId" = lk."Id"
     INNER JOIN Regulations reg ON lk."RegulationId" = reg."Id"
     WHERE lv."Status" = 0
-      AND lv."Created" <= p_createdBefore
+      AND lv."Created" <= "createdBefore"
       AND (p_lookupNames IS NULL
            OR LOWER(lk."Name") IN (
                SELECT LOWER(jt.val)

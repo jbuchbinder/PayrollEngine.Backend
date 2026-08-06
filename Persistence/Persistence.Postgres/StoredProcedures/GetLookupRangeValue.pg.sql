@@ -3,9 +3,9 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetLookupRangeValue(
-    IN p_lookupId   INTEGER,
-    IN p_rangeValue DECIMAL(28,6),
-    IN p_keyHash    INTEGER
+    IN "p_lookupId" INTEGER,
+    IN "p_rangeValue" DECIMAL(28,6),
+    IN "p_keyHash" INTEGER
 )
 LANGUAGE sql
 AS $$

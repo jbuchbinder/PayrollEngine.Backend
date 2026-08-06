@@ -5,13 +5,13 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedCollectors(
-    IN p_tenantId        INTEGER,
-    IN p_payrollId       INTEGER,
-    IN p_regulationDate  TIMESTAMP(6),
-    IN p_createdBefore   TIMESTAMP(6),
-    IN p_includeClusters TEXT,
-    IN p_excludeClusters TEXT,
-    IN p_collectorNames  TEXT
+    IN "tenantId" INTEGER,
+    IN "payrollId" INTEGER,
+    IN "regulationDate" TIMESTAMP(6),
+    IN "createdBefore" TIMESTAMP(6),
+    IN "includeClusters" TEXT,
+    IN "excludeClusters" TEXT,
+    IN "collectorNames" TEXT
 )
 LANGUAGE sql
 AS $$
@@ -24,10 +24,10 @@ AS $$
         FROM "PayrollLayer" pl
         INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
         WHERE r."Status" = 0
-          AND (r."TenantId" = p_tenantId OR r."SharedRegulation" = true)
-          AND r."Created" <= p_createdBefore
-          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= p_regulationDate)
-          AND pl."Status" = 0 AND pl."PayrollId" = p_payrollId
+          AND (r."TenantId" = "tenantId" OR r."SharedRegulation" = true)
+          AND r."Created" <= "createdBefore"
+          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= "regulationDate")
+          AND pl."Status" = 0 AND pl."PayrollId" = "payrollId"
     ),
     Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
     SELECT
@@ -43,12 +43,12 @@ AS $$
     FROM "Collector" co
     INNER JOIN Regulations reg ON co."RegulationId" = reg."Id"
     WHERE co."Status" = 0
-      AND co."Created" <= p_createdBefore
-      AND ((p_includeClusters IS NULL AND p_excludeClusters IS NULL)
-           OR IsMatchingCluster(p_includeClusters, p_excludeClusters, co."Clusters") = 1)
-      AND (p_collectorNames IS NULL
+      AND co."Created" <= "createdBefore"
+      AND (("includeClusters" IS NULL AND "excludeClusters" IS NULL)
+           OR IsMatchingCluster("includeClusters", "excludeClusters", co."Clusters") = 1)
+      AND ("collectorNames" IS NULL
            OR LOWER(co."Name") IN (
                SELECT LOWER(jt.val)
-               FROM jsonb_array_elements_text(p_collectorNames::jsonb) AS jt(val)))
+               FROM jsonb_array_elements_text("collectorNames"::jsonb) AS jt(val)))
     ORDER BY co."Name", reg."Level" DESC, reg."Priority" DESC;
 $$;

@@ -4,14 +4,14 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedReports(
-    IN p_tenantId        INTEGER,
-    IN p_payrollId       INTEGER,
-    IN p_regulationDate  TIMESTAMP(6),
-    IN p_createdBefore   TIMESTAMP(6),
-    IN p_userType        INTEGER,
-    IN p_reportNames     TEXT,
-    IN p_includeClusters TEXT,
-    IN p_excludeClusters TEXT
+    IN "tenantId" INTEGER,
+    IN "payrollId" INTEGER,
+    IN "regulationDate" TIMESTAMP(6),
+    IN "createdBefore" TIMESTAMP(6),
+    IN "p_userType" INTEGER,
+    IN "p_reportNames" TEXT,
+    IN "includeClusters" TEXT,
+    IN "excludeClusters" TEXT
 )
 LANGUAGE sql
 AS $$
@@ -24,10 +24,10 @@ AS $$
         FROM "PayrollLayer" pl
         INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
         WHERE r."Status" = 0
-          AND (r."TenantId" = p_tenantId OR r."SharedRegulation" = true)
-          AND r."Created" <= p_createdBefore
-          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= p_regulationDate)
-          AND pl."Status" = 0 AND pl."PayrollId" = p_payrollId
+          AND (r."TenantId" = "tenantId" OR r."SharedRegulation" = true)
+          AND r."Created" <= "createdBefore"
+          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= "regulationDate")
+          AND pl."Status" = 0 AND pl."PayrollId" = "payrollId"
     ),
     Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
     SELECT
@@ -42,10 +42,10 @@ AS $$
     FROM "Report" rp
     INNER JOIN Regulations reg ON rp."RegulationId" = reg."Id"
     WHERE rp."Status" = 0
-      AND rp."Created" <= p_createdBefore
+      AND rp."Created" <= "createdBefore"
       AND (p_userType IS NULL OR rp."UserType" <= p_userType)
-      AND ((p_includeClusters IS NULL AND p_excludeClusters IS NULL)
-           OR IsMatchingCluster(p_includeClusters, p_excludeClusters, rp."Clusters") = 1)
+      AND (("includeClusters" IS NULL AND "excludeClusters" IS NULL)
+           OR IsMatchingCluster("includeClusters", "excludeClusters", rp."Clusters") = 1)
       AND (p_reportNames IS NULL
            OR LOWER(rp."Name") IN (
                SELECT LOWER(jt.val)

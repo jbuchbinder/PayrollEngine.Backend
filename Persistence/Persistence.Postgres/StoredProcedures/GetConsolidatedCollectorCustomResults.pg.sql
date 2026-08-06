@@ -3,16 +3,16 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetConsolidatedCollectorCustomResults(
-    IN p_tenantId            INTEGER,
-    IN p_employeeId          INTEGER,
-    IN p_divisionId          INTEGER,
-    IN p_collectorNameHashes TEXT,
-    IN p_periodStartHashes   TEXT,
-    IN p_jobStatus           INTEGER,
-    IN p_forecast            TEXT,
-    IN p_evaluationDate      TIMESTAMP(6),
-    IN p_noRetro             BOOLEAN,
-    IN p_excludeParentJobId  INTEGER
+    IN "tenantId" INTEGER,
+    IN "employeeId" INTEGER,
+    IN "p_divisionId" INTEGER,
+    IN "p_collectorNameHashes" TEXT,
+    IN "p_periodStartHashes" TEXT,
+    IN "p_jobStatus" INTEGER,
+    IN "p_forecast" TEXT,
+    IN "p_evaluationDate" TIMESTAMP(6),
+    IN "p_noRetro" BOOLEAN,
+    IN "p_excludeParentJobId" INTEGER
 )
 LANGUAGE sql
 AS $$
@@ -41,8 +41,8 @@ DECLARE
                 ORDER BY r."Created" DESC, r."Id" DESC
             ) AS "RowNumber"
         FROM "CollectorCustomResult" r
-        WHERE r."TenantId" = p_tenantId
-          AND r."EmployeeId" = p_employeeId
+        WHERE r."TenantId" = "tenantId"
+          AND r."EmployeeId" = "employeeId"
           AND (v_startHashCount = 0 OR
                (v_startHashCount = 1 AND r."StartHash" = v_startHash) OR
                (v_startHashCount > 1 AND r."StartHash" IN (

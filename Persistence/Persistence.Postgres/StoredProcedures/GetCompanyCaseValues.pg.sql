@@ -3,9 +3,9 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetCompanyCaseValues(
-    IN p_parentId   INTEGER,
-    IN p_sql        TEXT,
-    IN p_attributes TEXT
+    IN "p_parentId" INTEGER,
+    IN "p_sql" TEXT,
+    IN "p_attributes" TEXT
 )
 LANGUAGE sql
 AS $$

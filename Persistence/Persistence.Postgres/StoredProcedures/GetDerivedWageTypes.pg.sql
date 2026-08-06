@@ -4,13 +4,13 @@
 -- =============================================================================
 
 CREATE OR REPLACE PROCEDURE GetDerivedWageTypes(
-    IN p_tenantId        INTEGER,
-    IN p_payrollId       INTEGER,
-    IN p_regulationDate  TIMESTAMP(6),
-    IN p_createdBefore   TIMESTAMP(6),
-    IN p_wageTypeNumbers TEXT,
-    IN p_includeClusters TEXT,
-    IN p_excludeClusters TEXT
+    IN "tenantId" INTEGER,
+    IN "payrollId" INTEGER,
+    IN "regulationDate" TIMESTAMP(6),
+    IN "createdBefore" TIMESTAMP(6),
+    IN "wageTypeNumbers" TEXT,
+    IN "includeClusters" TEXT,
+    IN "excludeClusters" TEXT
 )
 LANGUAGE sql
 AS $$
@@ -23,10 +23,10 @@ AS $$
         FROM "PayrollLayer" pl
         INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
         WHERE r."Status" = 0
-          AND (r."TenantId" = p_tenantId OR r."SharedRegulation" = true)
-          AND r."Created" <= p_createdBefore
-          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= p_regulationDate)
-          AND pl."Status" = 0 AND pl."PayrollId" = p_payrollId
+          AND (r."TenantId" = "tenantId" OR r."SharedRegulation" = true)
+          AND r."Created" <= "createdBefore"
+          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= "regulationDate")
+          AND pl."Status" = 0 AND pl."PayrollId" = "payrollId"
     ),
     Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
     SELECT
@@ -42,12 +42,12 @@ AS $$
     FROM "WageType" wt
     INNER JOIN Regulations reg ON wt."RegulationId" = reg."Id"
     WHERE wt."Status" = 0
-      AND wt."Created" <= p_createdBefore
-      AND ((p_includeClusters IS NULL AND p_excludeClusters IS NULL)
-           OR IsMatchingCluster(p_includeClusters, p_excludeClusters, wt."Clusters") = 1)
-      AND (p_wageTypeNumbers IS NULL
+      AND wt."Created" <= "createdBefore"
+      AND (("includeClusters" IS NULL AND "excludeClusters" IS NULL)
+           OR IsMatchingCluster("includeClusters", "excludeClusters", wt."Clusters") = 1)
+      AND ("wageTypeNumbers" IS NULL
            OR wt."WageTypeNumber" IN (
                SELECT CAST(jt.val AS DECIMAL(28,6))
-               FROM jsonb_array_elements_text(p_wageTypeNumbers::jsonb) AS jt(val)))
+               FROM jsonb_array_elements_text("wageTypeNumbers"::jsonb) AS jt(val)))
     ORDER BY wt."WageTypeNumber", reg."Level" DESC, reg."Priority" DESC;
 $$;
