@@ -400,7 +400,7 @@ public class DbContext : IDbContext
             DbType.Int32 => "integer",
             DbType.Int64 => "bigint",
             DbType.String or DbType.AnsiString => "text",
-            DbType.DateTime or DbType.DateTime2 => "timestamptz",
+            DbType.DateTime or DbType.DateTime2 => "timestamp",
             DbType.Decimal => "numeric",
             DbType.Double => "double precision",
             DbType.Boolean => "boolean",
