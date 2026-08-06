@@ -59,6 +59,11 @@ RUN if [ "$TARGETARCH" = "arm64" ]; then \
 # final stage
 FROM mcr.microsoft.com/dotnet/aspnet:10.0
 WORKDIR /app
+
+# Install PostgreSQL client for stored procedure bootstrapping
+RUN apt-get update && apt-get install -y --no-install-recommends postgresql-client && \
+    rm -rf /var/lib/apt/lists/*
+
 COPY --from=build /app/publish .
 COPY Database/Create-Model.sql /sql/ModelCreate.sql
 COPY Database/Update-Model.sql /sql/ModelUpdate.sql
