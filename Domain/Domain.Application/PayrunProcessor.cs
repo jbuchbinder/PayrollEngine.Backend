@@ -212,7 +212,16 @@ public class PayrunProcessor : FunctionToolBase
         Log.Trace($"{ModeTag}Phase 4: resolving employees (job {jobId})");
         phaseStopwatch.Restart();
         var employeesFromSetup = setup.Employees != null;
-        var employees = setup.Employees ?? await EmployeeResolver.ResolveAsync(context, jobInvocation.EmployeeIdentifiers);
+        List<Employee> employees = null;
+        try
+        {
+            employees = setup.Employees ?? await EmployeeResolver.ResolveAsync(context, jobInvocation.EmployeeIdentifiers);
+        }
+        catch (PayrunException ex)
+        {
+            Log.Trace($"{ModeTag}Phase 4 resolver exception: {ex.Message}. Falling back to direct query.");
+            employees = new List<Employee>();
+        }
         // PostgreSQL fallback: if resolver returns 0, use direct employee lookup
         if (employees.Count == 0)
         {
