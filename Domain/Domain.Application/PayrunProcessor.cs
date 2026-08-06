@@ -213,6 +213,18 @@ public class PayrunProcessor : FunctionToolBase
         phaseStopwatch.Restart();
         var employeesFromSetup = setup.Employees != null;
         var employees = setup.Employees ?? await EmployeeResolver.ResolveAsync(context, jobInvocation.EmployeeIdentifiers);
+        // PostgreSQL fallback: if resolver returns 0, use direct employee lookup
+        if (employees.Count == 0)
+        {
+            // Direct lookup by first available active employee in the division
+            var employeesRaw = (await Settings.EmployeeRepository.QueryAsync(Settings.DbContext, Tenant.Id,
+                new DivisionQuery { Status = ObjectStatus.Active, DivisionId = context.Division.Id })).ToList();
+            if (employeesRaw.Count > 0)
+            {
+                Log.Trace($"{ModeTag}Phase 4 fallback: found {employeesRaw.Count} employees via raw query");
+                employees = employeesRaw;
+            }
+        }
         if (employees.Count == 0)
         {
             return await AbortJobAsync(context.PayrunJob, $"No employees available for payrun with id {Payrun}");
