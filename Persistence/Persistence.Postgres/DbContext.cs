@@ -390,7 +390,7 @@ public class DbContext : IDbContext
             var pgType = MapDbTypeToPgCast(dbType);
             parts.Add($"@{cleanName}::{pgType}");
         }
-        return $"CALL \"{spName}\"({string.Join(", ", parts)})";
+        return $"CALL {spName}({string.Join(", ", parts)})";
     }
 
     private static string MapDbTypeToPgCast(DbType dbType)
