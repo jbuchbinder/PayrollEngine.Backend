@@ -580,7 +580,12 @@ public class DbContext : IDbContext
         var table = $"\"{dataTable.TableName}\"";
         const int batchSize = 500;
         var rows = dataTable.Rows.Cast<DataRow>().ToList();
-        var cols = dataTable.Columns.Cast<DataColumn>().ToList();
+        // Exclude the Id identity column — PostgreSQL GENERATED ALWAYS AS IDENTITY
+        // rejects explicit Id values (the shared ToDataTable adds a 0 placeholder for
+        // SQL Server's SqlBulkCopy identity handling).
+        var cols = dataTable.Columns.Cast<DataColumn>()
+            .Where(c => !string.Equals(c.ColumnName, "Id", StringComparison.OrdinalIgnoreCase))
+            .ToList();
         var colList = string.Join(",", cols.Select(c => $"\"{c.ColumnName}\""));
 
         var transaction = Transaction.Current;
