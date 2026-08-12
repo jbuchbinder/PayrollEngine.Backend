@@ -17,6 +17,10 @@ namespace PayrollEngine.Persistence.Postgres;
 /// <inheritdoc />
 public class DbContext : IDbContext
 {
+    /// <summary>Registers provider-local Dapper type handlers (DateTime → timestamptz).</summary>
+    static DbContext() =>
+        SqlMapper.AddTypeHandler(new DateTimeHandler());
+
     /// <summary>The current database version</summary>
     private static Version MinVersion => new(1, 0, 0);
 

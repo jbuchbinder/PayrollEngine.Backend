@@ -46,7 +46,9 @@ internal static class DataTableExtensions
         foreach (var name in firstParameter.ParameterNames)
         {
             var dbType = firstParameter.GetParameterType(name);
-            var type = dbType == null ? typeof(string) : dbType.Value.ToSystemType();
+            var type = dbType != null
+                ? dbType.Value.ToSystemType()
+                : parameterSet.InferColumnType(name);
             dataTable.Columns.Add(name, type);
             columnNames[dataTable.Columns.Count - 1] = name;
         }
@@ -84,5 +86,34 @@ internal static class DataTableExtensions
         }
 
         return dataTable;
+    }
+
+    /// <summary>
+    /// Infer a DataTable column type from the first non-null parameter value,
+    /// used when a parameter has no explicit database type.
+    /// </summary>
+    private static Type InferColumnType(this List<DbParameterCollection> parameterSet, string name)
+    {
+        foreach (var parameterCollection in parameterSet)
+        {
+            object value = null;
+            try
+            {
+                value = parameterCollection.Get<object>(name);
+            }
+            catch
+            {
+                // parameter not present in this collection
+            }
+
+            if (value == null || value == DBNull.Value)
+            {
+                continue;
+            }
+
+            var valueType = value.GetType();
+            return Nullable.GetUnderlyingType(valueType) ?? valueType;
+        }
+        return typeof(string);
     }
 }

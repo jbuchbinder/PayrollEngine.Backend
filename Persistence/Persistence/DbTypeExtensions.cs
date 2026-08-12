@@ -24,7 +24,6 @@ internal static class DbTypeExtensions
             case DbType.Decimal:
                 return typeof(decimal);
             case DbType.DateTime2:
-            case DbType.DateTimeOffset:
                 return typeof(DateTime);
             case DbType.Boolean:
                 return typeof(bool);
