@@ -1,34 +1,36 @@
 -- =============================================================================
 -- GetEmployeeCaseValues
--- Filter is EmployeeId (not TenantId) -- employee-scoped pivot
+-- Pivot function: creates a temp table filtered by employee (parentId = employee
+-- id), then executes the caller's query against it.
 -- =============================================================================
 
-CREATE OR REPLACE PROCEDURE GetEmployeeCaseValues(
-    IN p_parentId   INTEGER,
-    IN p_sql        TEXT,
-    IN p_attributes TEXT
+CREATE OR REPLACE FUNCTION GetEmployeeCaseValues(
+    IN "parentId"   INTEGER,
+    IN "employeeId" INTEGER,
+    IN "divisionId" INTEGER,
+    IN "sql"        TEXT,
+    IN "attributes" TEXT,
+    IN "culture"    TEXT
 )
+RETURNS SETOF "EmployeeCaseValue"
 LANGUAGE plpgsql
 AS $$
 DECLARE
     v_attrSql  TEXT;
     v_pivotSql TEXT;
 BEGIN
-    v_attrSql  := BuildAttributeQuery('EmployeeCaseValue.Attributes', p_attributes);
-    v_pivotSql := 'CREATE TEMP TABLE EmployeeCaseValuePivot AS SELECT EmployeeCaseValue.*'
+    v_attrSql := BuildAttributeQuery('"EmployeeCaseValue"."Attributes"', "attributes");
+    v_pivotSql := 'CREATE TEMP TABLE "##EmployeeCaseValuePivot" AS SELECT "EmployeeCaseValue".*'
         || v_attrSql
-        || ' FROM EmployeeCaseValue WHERE EmployeeCaseValue.EmployeeId = '
-        || p_parentId::TEXT;
+        || ' FROM "EmployeeCaseValue" WHERE "EmployeeCaseValue"."EmployeeId" = '
+        || "parentId"::TEXT;
 
-    DROP TABLE IF EXISTS EmployeeCaseValuePivot;
-
+    DROP TABLE IF EXISTS "##EmployeeCaseValuePivot";
     EXECUTE v_pivotSql;
-
-    EXECUTE p_sql;
-
-    DROP TABLE IF EXISTS EmployeeCaseValuePivot;
+    RETURN QUERY EXECUTE "sql";
+    DROP TABLE IF EXISTS "##EmployeeCaseValuePivot";
 EXCEPTION WHEN OTHERS THEN
-    DROP TABLE IF EXISTS EmployeeCaseValuePivot;
+    DROP TABLE IF EXISTS "##EmployeeCaseValuePivot";
     RAISE;
 END;
 $$;

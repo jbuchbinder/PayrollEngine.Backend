@@ -44,14 +44,14 @@ internal sealed class CaseValueResultCountCommand : DomainRepositoryCommandBase
         {
             parameters.Add(ParameterCaseValueQuery.DivisionId, query.DivisionId, DbType.Int32);
         }
-        parameters.Add(ParameterCaseValueQuery.Sql, query.Query);
+        parameters.Add(ParameterCaseValueQuery.Sql, query.Query, DbType.String);
         parameters.Add(ParameterCaseValueQuery.Attributes,
             query.QueryAttributes?.Any() == true
-                ? JsonSerializer.Serialize(query.QueryAttributes) : null);
+                ? JsonSerializer.Serialize(query.QueryAttributes) : null, DbType.String);
         if (context.CaseValueExtendedParameters)
         {
             parameters.Add(ParameterCaseValueQuery.Culture,
-                string.IsNullOrWhiteSpace(query.Culture) ? null : query.Culture);
+                string.IsNullOrWhiteSpace(query.Culture) ? null : query.Culture, DbType.String);
         }
 
         var counts = (await context.QueryAsync<long>(
