@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Dapper;
 using PayrollEngine.Domain.Model;
 using PayrollEngine.Domain.Model.Repository;
 using PayrollEngine.Persistence.DbSchema;
@@ -43,29 +42,12 @@ public class EmployeeRepository(IEmployeeDivisionRepository divisionRepository) 
         // division query
         if (query is DivisionQuery divisionQuery && divisionQuery.DivisionId.HasValue)
         {
-            // PostgreSQL: use raw SQL to avoid SqlKata LEFT JOIN duplicate issue
-            var pgSql = $"SELECT e.* FROM \"Employee\" e " +
-                        $"INNER JOIN \"EmployeeDivision\" ed ON e.\"Id\" = ed.\"EmployeeId\" " +
-                        $"WHERE e.\"TenantId\" = @tenantId AND e.\"Status\" = @status " +
-                        $"AND ed.\"DivisionId\" = @divisionId";
-            var pgParams = new DynamicParameters();
-            pgParams.Add("@tenantId", tenantId);
-            pgParams.Add("@status", (int)ObjectStatus.Active);
-            pgParams.Add("@divisionId", divisionQuery.DivisionId.Value);
+            // division query
+            var dbDivisionQuery = GetDivisionQuery(context, tenantId, query, divisionQuery);
 
-            if (!string.IsNullOrWhiteSpace(query?.Filter))
-            {
-                // Parse OData filter "Identifier eq 'value'"
-                var filter = query.Filter;
-                var match = System.Text.RegularExpressions.Regex.Match(filter, @"(\w+)\s+eq\s+'([^']+)'");
-                if (match.Success)
-                {
-                    pgSql += $" AND e.\"{match.Groups[1].Value}\" = @filterValue";
-                    pgParams.Add("@filterValue", match.Groups[2].Value);
-                }
-            }
+            // SELECT execution
+            var employees = (await QueryAsync<Employee>(context, dbDivisionQuery)).ToList();
 
-            var employees = (await context.QueryAsync<Employee>(pgSql, pgParams)).ToList();
             // query employee divisions
             if (query.Result == null || query.Result != QueryResultType.Count)
             {

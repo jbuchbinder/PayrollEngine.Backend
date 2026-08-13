@@ -213,28 +213,7 @@ public class PayrunProcessor : FunctionToolBase
         Log.Trace($"{ModeTag}Phase 4: resolving employees (job {jobId})");
         phaseStopwatch.Restart();
         var employeesFromSetup = setup.Employees != null;
-        List<Employee> employees = null;
-        try
-        {
-            employees = setup.Employees ?? await EmployeeResolver.ResolveAsync(context, jobInvocation.EmployeeIdentifiers);
-        }
-        catch (PayrunException ex)
-        {
-            Log.Trace($"{ModeTag}Phase 4 resolver exception: {ex.Message}. Falling back to direct query.");
-            employees = new List<Employee>();
-        }
-        // PostgreSQL fallback: if resolver returns 0, use direct raw SQL
-        if (employees.Count == 0)
-        {
-            // Raw SQL to avoid SqlKata compilation issues (\"Employee.*\" vs \"Employee\".*)
-            var rawSql = $"SELECT e.* FROM \"Employee\" e INNER JOIN \"EmployeeDivision\" ed ON e.\"Id\" = ed.\"EmployeeId\" WHERE e.\"TenantId\" = {Tenant.Id} AND e.\"Status\" = 1 AND ed.\"DivisionId\" = {context.Division.Id}";
-            var employeesRaw = (await Settings.DbContext.QueryAsync<Employee>(rawSql)).ToList();
-            if (employeesRaw.Count > 0)
-            {
-                Log.Trace($"{ModeTag}Phase 4 fallback (raw SQL): found {employeesRaw.Count} employees");
-                employees = employeesRaw;
-            }
-        }
+        var employees = setup.Employees ?? await EmployeeResolver.ResolveAsync(context, jobInvocation.EmployeeIdentifiers);
         if (employees.Count == 0)
         {
             return await AbortJobAsync(context.PayrunJob, $"No employees available for payrun with id {Payrun}");
