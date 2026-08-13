@@ -16,6 +16,8 @@ public static class DapperTypes
         // type handlers
         // date time
         SqlMapper.AddTypeMap(typeof(DateTime), DbType.DateTime2);
+        // date time offset (payrun result Start/End -> timestamptz)
+        SqlMapper.AddTypeHandler(new DateTimeOffsetTypeHandler());
         // lookup settings
         SqlMapper.AddTypeHandler(new JsonObjectTypeHandler<LookupSettings>());
         // case relation reference
