@@ -2,54 +2,52 @@
 -- GetWageTypeResults
 -- =============================================================================
 
-CREATE OR REPLACE PROCEDURE GetWageTypeResults(
-    IN p_tenantId          INTEGER,
-    IN p_employeeId        INTEGER,
-    IN p_divisionId        INTEGER,
-    IN p_payrunJobId       INTEGER,
-    IN p_parentPayrunJobId INTEGER,
-    IN p_wageTypeNumbers   TEXT,
-    IN p_periodStart       TIMESTAMP(6),
-    IN p_periodEnd         TIMESTAMP(6),
-    IN p_jobStatus         INTEGER,
-    IN p_forecast          TEXT,
-    IN p_evaluationDate    TIMESTAMP(6)
+CREATE OR REPLACE FUNCTION GetWageTypeResults(
+    IN "tenantId"          INTEGER,
+    IN "employeeId"        INTEGER,
+    IN "divisionId"        INTEGER,
+    IN "payrunJobId"       INTEGER,
+    IN "parentPayrunJobId" INTEGER,
+    IN "wageTypeNumbers"   TEXT,
+    IN "periodStart"       TIMESTAMP(6),
+    IN "periodEnd"         TIMESTAMP(6),
+    IN "forecast"          TEXT,
+    IN "jobStatus"         INTEGER,
+    IN "evaluationDate"    TIMESTAMP(6)
 )
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    v_wageTypeNumber DECIMAL(28,6);
-    v_wageTypeCount  INTEGER;
-BEGIN
-    v_wageTypeCount := CASE WHEN p_wageTypeNumbers IS NULL THEN 0
-                            ELSE jsonb_array_length(p_wageTypeNumbers::jsonb) END;
-
-    IF v_wageTypeCount = 1 THEN
-        SELECT CAST(jt.val AS DECIMAL(28,6)) INTO v_wageTypeNumber
-        FROM jsonb_array_elements_text(p_wageTypeNumbers::jsonb) AS jt(val)
-        LIMIT 1;
-    END IF;
-
-    RETURN QUERY
-    SELECT wtr.*
-    FROM WageTypeResult wtr
-    WHERE wtr.TenantId = p_tenantId
-      AND wtr.EmployeeId = p_employeeId
-      AND (p_divisionId IS NULL        OR wtr.DivisionId = p_divisionId)
-      AND (p_payrunJobId IS NULL       OR wtr.PayrunJobId = p_payrunJobId)
-      AND (p_parentPayrunJobId IS NULL OR wtr.ParentJobId = p_parentPayrunJobId)
-      AND (p_wageTypeNumbers IS NULL OR v_wageTypeCount = 0
-           OR (v_wageTypeCount = 1 AND wtr.WageTypeNumber = v_wageTypeNumber)
-           OR (v_wageTypeCount > 1 AND wtr.WageTypeNumber IN (
+RETURNS TABLE(
+    "Id" INT, "Status" INT, "Created" TIMESTAMPTZ, "Updated" TIMESTAMPTZ,
+    "PayrollResultId" INT, "TenantId" INT, "EmployeeId" INT, "DivisionId" INT,
+    "WageTypeId" INT, "WageTypeNumber" NUMERIC, "WageTypeName" TEXT,
+    "WageTypeNameLocalizations" TEXT, "ValueType" INT, "Value" NUMERIC,
+    "Culture" TEXT, "Start" TIMESTAMPTZ, "StartHash" INT, "End" TIMESTAMPTZ,
+    "PayrunJobId" INT, "Forecast" TEXT, "ParentJobId" INT,
+    "Tags" TEXT, "Attributes" TEXT
+)
+LANGUAGE sql STABLE AS $$
+    SELECT wtr."Id", wtr."Status", wtr."Created", wtr."Updated",
+        wtr."PayrollResultId", wtr."TenantId", wtr."EmployeeId", wtr."DivisionId",
+        wtr."WageTypeId", wtr."WageTypeNumber", wtr."WageTypeName",
+        wtr."WageTypeNameLocalizations", wtr."ValueType", wtr."Value",
+        wtr."Culture", wtr."Start", wtr."StartHash", wtr."End",
+        wtr."PayrunJobId", wtr."Forecast", wtr."ParentJobId",
+        wtr."Tags", wtr."Attributes"
+    FROM "WageTypeResult" wtr
+    WHERE wtr."TenantId" = "tenantId"
+      AND wtr."EmployeeId" = "employeeId"
+      AND ("divisionId" IS NULL OR wtr."DivisionId" = "divisionId")
+      AND ("payrunJobId" IS NULL OR wtr."PayrunJobId" = "payrunJobId")
+      AND ("parentPayrunJobId" IS NULL OR wtr."ParentJobId" = "parentPayrunJobId")
+      AND ("wageTypeNumbers" IS NULL
+           OR wtr."WageTypeNumber" IN (
                SELECT CAST(jt.val AS DECIMAL(28,6))
-               FROM jsonb_array_elements_text(p_wageTypeNumbers::jsonb) AS jt(val))))
-      AND (p_periodStart IS NULL OR wtr.Start BETWEEN p_periodStart AND p_periodEnd)
-      AND (p_jobStatus IS NULL OR wtr.PayrunJobId IN (
-               SELECT pj.Id FROM PayrunJob pj
-               WHERE pj.Id = wtr.PayrunJobId
-                 AND (pj.JobStatus & p_jobStatus) = pj.JobStatus))
-      AND (wtr.Forecast IS NULL OR wtr.Forecast = p_forecast)
-      AND (p_evaluationDate IS NULL OR wtr.Created <= p_evaluationDate)
-    ORDER BY wtr.Created;
-END;
+               FROM jsonb_array_elements_text("wageTypeNumbers"::jsonb) AS jt(val)))
+      AND ("periodStart" IS NULL OR wtr."Start" BETWEEN "periodStart" AND "periodEnd")
+      AND ("jobStatus" IS NULL OR wtr."PayrunJobId" IN (
+               SELECT pj."Id" FROM "PayrunJob" pj
+               WHERE pj."Id" = wtr."PayrunJobId"
+                 AND (pj."JobStatus" & "jobStatus") = pj."JobStatus"))
+      AND (wtr."Forecast" IS NULL OR wtr."Forecast" = "forecast")
+      AND ("evaluationDate" IS NULL OR wtr."Created" <= "evaluationDate")
+    ORDER BY wtr."Created";
 $$;

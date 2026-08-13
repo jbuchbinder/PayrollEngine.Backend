@@ -2,54 +2,54 @@
 -- GetCollectorResults
 -- =============================================================================
 
-CREATE OR REPLACE PROCEDURE GetCollectorResults(
-    IN p_tenantId            INTEGER,
-    IN p_employeeId          INTEGER,
-    IN p_divisionId          INTEGER,
-    IN p_payrunJobId         INTEGER,
-    IN p_parentPayrunJobId   INTEGER,
-    IN p_collectorNameHashes TEXT,
-    IN p_periodStart         TIMESTAMP(6),
-    IN p_periodEnd           TIMESTAMP(6),
-    IN p_jobStatus           INTEGER,
-    IN p_forecast            TEXT,
-    IN p_evaluationDate      TIMESTAMP(6)
+CREATE OR REPLACE FUNCTION GetCollectorResults(
+    IN "tenantId"            INTEGER,
+    IN "employeeId"          INTEGER,
+    IN "divisionId"          INTEGER,
+    IN "payrunJobId"         INTEGER,
+    IN "parentPayrunJobId"   INTEGER,
+    IN "collectorNameHashes" TEXT,
+    IN "periodStart"         TIMESTAMP(6),
+    IN "periodEnd"           TIMESTAMP(6),
+    IN "forecast"            TEXT,
+    IN "jobStatus"           INTEGER,
+    IN "evaluationDate"      TIMESTAMP(6)
 )
-LANGUAGE plpgsql
-AS $$
-DECLARE
-    v_collectorNameHash INTEGER;
-    v_collectorCount    INTEGER;
-BEGIN
-    v_collectorCount := CASE WHEN p_collectorNameHashes IS NULL THEN 0
-                             ELSE jsonb_array_length(p_collectorNameHashes::jsonb) END;
-
-    IF v_collectorCount = 1 THEN
-        SELECT CAST(jt.val AS INTEGER) INTO v_collectorNameHash
-        FROM jsonb_array_elements_text(p_collectorNameHashes::jsonb) AS jt(val)
-        LIMIT 1;
-    END IF;
-
-    RETURN QUERY
-    SELECT cr.*
-    FROM CollectorResult cr
-    WHERE cr.TenantId = p_tenantId
-      AND cr.EmployeeId = p_employeeId
-      AND (p_divisionId IS NULL        OR cr.DivisionId = p_divisionId)
-      AND (p_payrunJobId IS NULL       OR cr.PayrunJobId = p_payrunJobId)
-      AND (p_parentPayrunJobId IS NULL OR cr.ParentJobId = p_parentPayrunJobId)
-      AND (p_collectorNameHashes IS NULL OR v_collectorCount = 0
-           OR (v_collectorCount = 1 AND cr.CollectorNameHash = v_collectorNameHash)
-           OR (v_collectorCount > 1 AND cr.CollectorNameHash IN (
+RETURNS TABLE(
+    "Id" INT, "Status" INT, "Created" TIMESTAMPTZ, "Updated" TIMESTAMPTZ,
+    "PayrollResultId" INT, "TenantId" INT, "EmployeeId" INT, "DivisionId" INT,
+    "CollectorId" INT, "CollectorName" TEXT, "CollectorNameHash" INT,
+    "CollectorNameLocalizations" TEXT, "CollectMode" INT, "Negated" BOOLEAN,
+    "ValueType" INT, "Value" NUMERIC, "Culture" TEXT,
+    "Start" TIMESTAMPTZ, "StartHash" INT, "End" TIMESTAMPTZ,
+    "PayrunJobId" INT, "Forecast" TEXT, "ParentJobId" INT,
+    "Tags" TEXT, "Attributes" TEXT
+)
+LANGUAGE sql STABLE AS $$
+    SELECT cr."Id", cr."Status", cr."Created", cr."Updated",
+        cr."PayrollResultId", cr."TenantId", cr."EmployeeId", cr."DivisionId",
+        cr."CollectorId", cr."CollectorName", cr."CollectorNameHash",
+        cr."CollectorNameLocalizations", cr."CollectMode", cr."Negated",
+        cr."ValueType", cr."Value", cr."Culture",
+        cr."Start", cr."StartHash", cr."End",
+        cr."PayrunJobId", cr."Forecast", cr."ParentJobId",
+        cr."Tags", cr."Attributes"
+    FROM "CollectorResult" cr
+    WHERE cr."TenantId" = "tenantId"
+      AND cr."EmployeeId" = "employeeId"
+      AND ("divisionId" IS NULL OR cr."DivisionId" = "divisionId")
+      AND ("payrunJobId" IS NULL OR cr."PayrunJobId" = "payrunJobId")
+      AND ("parentPayrunJobId" IS NULL OR cr."ParentJobId" = "parentPayrunJobId")
+      AND ("collectorNameHashes" IS NULL
+           OR cr."CollectorNameHash" IN (
                SELECT CAST(jt.val AS INTEGER)
-               FROM jsonb_array_elements_text(p_collectorNameHashes::jsonb) AS jt(val))))
-      AND (p_periodStart IS NULL OR cr.Start BETWEEN p_periodStart AND p_periodEnd)
-      AND (p_jobStatus IS NULL OR cr.PayrunJobId IN (
-               SELECT pj.Id FROM PayrunJob pj
-               WHERE pj.Id = cr.PayrunJobId
-                 AND (pj.JobStatus & p_jobStatus) = pj.JobStatus))
-      AND (cr.Forecast IS NULL OR cr.Forecast = p_forecast)
-      AND (p_evaluationDate IS NULL OR cr.Created <= p_evaluationDate)
-    ORDER BY cr.Created;
-END;
+               FROM jsonb_array_elements_text("collectorNameHashes"::jsonb) AS jt(val)))
+      AND ("periodStart" IS NULL OR cr."Start" BETWEEN "periodStart" AND "periodEnd")
+      AND ("jobStatus" IS NULL OR cr."PayrunJobId" IN (
+               SELECT pj."Id" FROM "PayrunJob" pj
+               WHERE pj."Id" = cr."PayrunJobId"
+                 AND (pj."JobStatus" & "jobStatus") = pj."JobStatus"))
+      AND (cr."Forecast" IS NULL OR cr."Forecast" = "forecast")
+      AND ("evaluationDate" IS NULL OR cr."Created" <= "evaluationDate")
+    ORDER BY cr."Created";
 $$;

@@ -4,49 +4,57 @@
 -- Case-sensitive key filter (no LOWER(), identical to T-SQL)
 -- =============================================================================
 
-CREATE OR REPLACE PROCEDURE GetDerivedLookupValues(
-    IN p_tenantId       INTEGER,
-    IN p_payrollId      INTEGER,
-    IN p_regulationDate TIMESTAMP(6),
-    IN p_createdBefore  TIMESTAMP(6),
-    IN p_lookupNames    TEXT,
-    IN p_lookupKeys     TEXT
+CREATE OR REPLACE FUNCTION GetDerivedLookupValues(
+    IN "tenantId"       INTEGER,
+    IN "payrollId"      INTEGER,
+    IN "regulationDate" TIMESTAMP(6),
+    IN "createdBefore"  TIMESTAMP(6),
+    IN "lookupNames"    TEXT,
+    IN "lookupKeys"     TEXT
 )
-LANGUAGE plpgsql
-AS $$
-BEGIN
-    RETURN QUERY
+RETURNS TABLE(
+    "RegulationId" INT, "Level" INT, "Priority" INT,
+    "Id" INT, "Status" INT, "Created" TIMESTAMPTZ, "Updated" TIMESTAMPTZ,
+    "LookupId" INT, "Key" TEXT, "KeyHash" INT, "RangeValue" NUMERIC, "Value" TEXT,
+    "ValueLocalizations" TEXT, "OverrideType" INT, "LookupHash" INT
+)
+LANGUAGE sql STABLE AS $$
     WITH DerivedRegulations AS (
-        SELECT r.Id, pl.Level, pl.Priority,
+        SELECT r."Id", pl."Level", pl."Priority",
             ROW_NUMBER() OVER (
-                PARTITION BY pl.Id, r.Name
-                ORDER BY r.ValidFrom DESC, r.Created DESC
-            ) AS RowNumber
-        FROM PayrollLayer pl
-        INNER JOIN Regulation r ON pl.RegulationName = r.Name
-        WHERE r.Status = 0
-          AND (r.TenantId = p_tenantId OR r.SharedRegulation = 1)
-          AND r.Created <= p_createdBefore
-          AND (r.ValidFrom IS NULL OR r.ValidFrom <= p_regulationDate)
-          AND pl.Status = 0 AND pl.PayrollId = p_payrollId
+                PARTITION BY pl."Id", r."Name"
+                ORDER BY r."ValidFrom" DESC, r."Created" DESC
+            ) AS "RowNumber"
+        FROM "PayrollLayer" pl
+        INNER JOIN "Regulation" r ON pl."RegulationName" = r."Name"
+        WHERE r."Status" = 0
+          AND (r."TenantId" = "tenantId"
+            OR (r."SharedRegulation" = true
+              AND EXISTS (SELECT 1 FROM "RegulationShare" rs
+                    WHERE rs."ProviderRegulationId" = r."Id"
+                      AND rs."ConsumerTenantId" = "tenantId"
+                      AND rs."IsolationLevel" >= 3)))
+          AND r."Created" <= "createdBefore"
+          AND (r."ValidFrom" IS NULL OR r."ValidFrom" <= "regulationDate")
+          AND pl."Status" = 0 AND pl."PayrollId" = "payrollId"
     ),
-    Regulations AS (SELECT Id, Level, Priority FROM DerivedRegulations WHERE RowNumber = 1)
-    SELECT
-        reg.Id AS RegulationId, reg.Level, reg.Priority,
-        lv.*
-    FROM LookupValue lv
-    INNER JOIN Lookup lk ON lv.LookupId = lk.Id
-    INNER JOIN Regulations reg ON lk.RegulationId = reg.Id
-    WHERE lv.Status = 0
-      AND lv.Created <= p_createdBefore
-      AND (p_lookupNames IS NULL
-           OR LOWER(lk.Name) IN (
+    Regulations AS (SELECT "Id", "Level", "Priority" FROM DerivedRegulations WHERE "RowNumber" = 1)
+    SELECT reg."Id", reg."Level", reg."Priority",
+        lv."Id", lv."Status", lv."Created", lv."Updated",
+        lv."LookupId", lv."Key", lv."KeyHash", lv."RangeValue", lv."Value",
+        lv."ValueLocalizations", lv."OverrideType", lv."LookupHash"
+    FROM "LookupValue" lv
+    INNER JOIN "Lookup" lk ON lv."LookupId" = lk."Id"
+    INNER JOIN Regulations reg ON lk."RegulationId" = reg."Id"
+    WHERE lv."Status" = 0
+      AND lv."Created" <= "createdBefore"
+      AND ("lookupNames" IS NULL
+           OR LOWER(lk."Name") IN (
                SELECT LOWER(jt.val)
-               FROM jsonb_array_elements_text(p_lookupNames::jsonb) AS jt(val)))
-      AND (p_lookupKeys IS NULL
+               FROM jsonb_array_elements_text("lookupNames"::jsonb) AS jt(val)))
+      AND ("lookupKeys" IS NULL
            OR lv."Key" IN (
                SELECT jt.val
-               FROM jsonb_array_elements_text(p_lookupKeys::jsonb) AS jt(val)))
-    ORDER BY reg.Level DESC, reg.Priority DESC;
-END;
+               FROM jsonb_array_elements_text("lookupKeys"::jsonb) AS jt(val)))
+    ORDER BY reg."Level" DESC, reg."Priority" DESC;
 $$;
