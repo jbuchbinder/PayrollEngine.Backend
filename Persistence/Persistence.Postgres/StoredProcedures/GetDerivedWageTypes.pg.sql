@@ -1,3 +1,6 @@
+DROP FUNCTION IF EXISTS GetDerivedWageTypes;
+DROP PROCEDURE IF EXISTS GetDerivedWageTypes;
+
 CREATE OR REPLACE FUNCTION GetDerivedWageTypes(
     IN "tenantId" INTEGER, IN "payrollId" INTEGER,
     IN "regulationDate" TIMESTAMP(6), IN "createdBefore" TIMESTAMP(6),

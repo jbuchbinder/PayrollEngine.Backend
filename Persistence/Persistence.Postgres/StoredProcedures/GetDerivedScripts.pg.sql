@@ -3,6 +3,9 @@
 -- OverrideType excluded from SELECT (matches T-SQL explicit column list)
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetDerivedScripts;
+DROP PROCEDURE IF EXISTS GetDerivedScripts;
+
 CREATE OR REPLACE FUNCTION GetDerivedScripts(
     IN "tenantId"       INTEGER,
     IN "payrollId"      INTEGER,

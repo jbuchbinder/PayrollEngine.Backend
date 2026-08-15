@@ -2,6 +2,9 @@
 -- GetDerivedReportParameters
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetDerivedReportParameters;
+DROP PROCEDURE IF EXISTS GetDerivedReportParameters;
+
 CREATE OR REPLACE FUNCTION GetDerivedReportParameters(
     IN "tenantId"       INTEGER,
     IN "payrollId"      INTEGER,

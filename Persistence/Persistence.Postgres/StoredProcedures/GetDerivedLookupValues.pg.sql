@@ -4,6 +4,9 @@
 -- Case-sensitive key filter (no LOWER(), identical to T-SQL)
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetDerivedLookupValues;
+DROP PROCEDURE IF EXISTS GetDerivedLookupValues;
+
 CREATE OR REPLACE FUNCTION GetDerivedLookupValues(
     IN "tenantId"       INTEGER,
     IN "payrollId"      INTEGER,

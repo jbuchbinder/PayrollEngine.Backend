@@ -2,6 +2,9 @@
 -- GetDerivedReportTemplates
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetDerivedReportTemplates;
+DROP PROCEDURE IF EXISTS GetDerivedReportTemplates;
+
 CREATE OR REPLACE FUNCTION GetDerivedReportTemplates(
     IN "tenantId"       INTEGER,
     IN "payrollId"      INTEGER,

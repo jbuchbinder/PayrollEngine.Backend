@@ -4,6 +4,9 @@
 -- caller's query against it.
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetGlobalCaseValues;
+DROP PROCEDURE IF EXISTS GetGlobalCaseValues;
+
 CREATE OR REPLACE FUNCTION GetGlobalCaseValues(
     IN "parentId"   INTEGER,
     IN "employeeId" INTEGER,

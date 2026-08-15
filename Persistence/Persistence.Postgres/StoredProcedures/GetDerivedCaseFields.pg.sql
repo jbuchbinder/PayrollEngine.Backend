@@ -5,6 +5,9 @@
 
 DROP FUNCTION IF EXISTS GetDerivedCaseFields;
 
+DROP FUNCTION IF EXISTS GetDerivedCaseFields;
+DROP PROCEDURE IF EXISTS GetDerivedCaseFields;
+
 CREATE OR REPLACE FUNCTION GetDerivedCaseFields(
     IN "tenantId"        INTEGER,
     IN "payrollId"       INTEGER,

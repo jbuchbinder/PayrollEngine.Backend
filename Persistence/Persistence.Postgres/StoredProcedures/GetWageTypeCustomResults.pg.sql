@@ -2,6 +2,9 @@
 -- GetWageTypeCustomResults
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetWageTypeCustomResults;
+DROP PROCEDURE IF EXISTS GetWageTypeCustomResults;
+
 CREATE OR REPLACE FUNCTION GetWageTypeCustomResults(
     IN "tenantId"          INTEGER,
     IN "employeeId"        INTEGER,

@@ -3,6 +3,9 @@
 -- Direct JOIN query -- no pivot, no temp table needed.
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetEmployeeCaseValuesByTenant;
+DROP PROCEDURE IF EXISTS GetEmployeeCaseValuesByTenant;
+
 CREATE OR REPLACE FUNCTION GetEmployeeCaseValuesByTenant(
     IN "tenantId"       INTEGER,
     IN "valueDate"      TIMESTAMP(6),

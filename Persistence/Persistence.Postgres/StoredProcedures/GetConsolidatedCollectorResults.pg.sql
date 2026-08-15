@@ -2,6 +2,9 @@
 -- GetConsolidatedCollectorResults
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetConsolidatedCollectorResults;
+DROP PROCEDURE IF EXISTS GetConsolidatedCollectorResults;
+
 CREATE OR REPLACE FUNCTION GetConsolidatedCollectorResults(
     IN "tenantId"            INTEGER,
     IN "employeeId"          INTEGER,

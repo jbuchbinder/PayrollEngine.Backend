@@ -3,6 +3,9 @@
 -- Excludes Binary, Script, ScriptVersion, OverrideType (performance hint)
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetDerivedReports;
+DROP PROCEDURE IF EXISTS GetDerivedReports;
+
 CREATE OR REPLACE FUNCTION GetDerivedReports(
     IN "tenantId"        INTEGER,
     IN "payrollId"       INTEGER,

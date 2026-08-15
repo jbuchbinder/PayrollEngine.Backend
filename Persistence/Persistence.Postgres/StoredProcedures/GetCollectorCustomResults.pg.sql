@@ -2,6 +2,9 @@
 -- GetCollectorCustomResults
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetCollectorCustomResults;
+DROP PROCEDURE IF EXISTS GetCollectorCustomResults;
+
 CREATE OR REPLACE FUNCTION GetCollectorCustomResults(
     IN "tenantId"            INTEGER,
     IN "employeeId"          INTEGER,

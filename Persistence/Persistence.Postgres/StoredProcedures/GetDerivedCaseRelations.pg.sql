@@ -4,6 +4,9 @@
 -- Excludes Binary, Script, ScriptVersion (performance hint)
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetDerivedCaseRelations;
+DROP PROCEDURE IF EXISTS GetDerivedCaseRelations;
+
 CREATE OR REPLACE FUNCTION GetDerivedCaseRelations(
     IN "tenantId"        INTEGER,
     IN "payrollId"       INTEGER,

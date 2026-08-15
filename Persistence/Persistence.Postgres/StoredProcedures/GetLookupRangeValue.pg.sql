@@ -2,6 +2,9 @@
 -- GetLookupRangeValue
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetLookupRangeValue;
+DROP PROCEDURE IF EXISTS GetLookupRangeValue;
+
 CREATE OR REPLACE FUNCTION GetLookupRangeValue(
     IN "lookupId"   INTEGER,
     IN "rangeValue" NUMERIC,

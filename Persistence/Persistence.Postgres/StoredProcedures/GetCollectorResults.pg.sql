@@ -2,6 +2,9 @@
 -- GetCollectorResults
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetCollectorResults;
+DROP PROCEDURE IF EXISTS GetCollectorResults;
+
 CREATE OR REPLACE FUNCTION GetCollectorResults(
     IN "tenantId"            INTEGER,
     IN "employeeId"          INTEGER,

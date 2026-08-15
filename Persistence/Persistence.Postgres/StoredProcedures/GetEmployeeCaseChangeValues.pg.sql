@@ -5,6 +5,9 @@
 -- TenantId is sourced from the Employee join (EmployeeCaseChange has no tenant).
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetEmployeeCaseChangeValues;
+DROP PROCEDURE IF EXISTS GetEmployeeCaseChangeValues;
+
 CREATE OR REPLACE FUNCTION GetEmployeeCaseChangeValues(
     IN "parentId"   INTEGER,
     IN "employeeId" INTEGER,

@@ -2,6 +2,9 @@
 -- GetDerivedLookups
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetDerivedLookups;
+DROP PROCEDURE IF EXISTS GetDerivedLookups;
+
 CREATE OR REPLACE FUNCTION GetDerivedLookups(
     IN "tenantId"       INTEGER,
     IN "payrollId"      INTEGER,

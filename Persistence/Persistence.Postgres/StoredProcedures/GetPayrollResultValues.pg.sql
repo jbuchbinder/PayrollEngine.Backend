@@ -6,6 +6,9 @@
 -- SqlKata-compiled caller query.
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetPayrollResultValues;
+DROP PROCEDURE IF EXISTS GetPayrollResultValues;
+
 CREATE OR REPLACE FUNCTION GetPayrollResultValues(
     IN "parentId"   INTEGER,
     IN "employeeId" INTEGER,

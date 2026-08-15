@@ -4,6 +4,9 @@
 -- executes the caller's query against it.
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetNationalCaseChangeValues;
+DROP PROCEDURE IF EXISTS GetNationalCaseChangeValues;
+
 CREATE OR REPLACE FUNCTION GetNationalCaseChangeValues(
     IN "parentId"   INTEGER,
     IN "employeeId" INTEGER,

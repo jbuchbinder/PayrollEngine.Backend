@@ -2,6 +2,9 @@
 -- GetConsolidatedWageTypeCustomResults
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetConsolidatedWageTypeCustomResults;
+DROP PROCEDURE IF EXISTS GetConsolidatedWageTypeCustomResults;
+
 CREATE OR REPLACE FUNCTION GetConsolidatedWageTypeCustomResults(
     IN "tenantId"           INTEGER,
     IN "employeeId"         INTEGER,

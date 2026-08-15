@@ -2,6 +2,9 @@
 -- GetWageTypeResults
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetWageTypeResults;
+DROP PROCEDURE IF EXISTS GetWageTypeResults;
+
 CREATE OR REPLACE FUNCTION GetWageTypeResults(
     IN "tenantId"          INTEGER,
     IN "employeeId"        INTEGER,

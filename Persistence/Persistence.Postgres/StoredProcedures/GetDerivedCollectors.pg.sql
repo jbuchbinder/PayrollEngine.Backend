@@ -1,3 +1,6 @@
+DROP FUNCTION IF EXISTS GetDerivedCollectors;
+DROP PROCEDURE IF EXISTS GetDerivedCollectors;
+
 CREATE OR REPLACE FUNCTION GetDerivedCollectors(
     IN "tenantId" INTEGER, IN "payrollId" INTEGER,
     IN "regulationDate" TIMESTAMP(6), IN "createdBefore" TIMESTAMP(6),

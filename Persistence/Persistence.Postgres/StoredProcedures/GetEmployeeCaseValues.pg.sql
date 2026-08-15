@@ -4,6 +4,9 @@
 -- id), then executes the caller's query against it.
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetEmployeeCaseValues;
+DROP PROCEDURE IF EXISTS GetEmployeeCaseValues;
+
 CREATE OR REPLACE FUNCTION GetEmployeeCaseValues(
     IN "parentId"   INTEGER,
     IN "employeeId" INTEGER,

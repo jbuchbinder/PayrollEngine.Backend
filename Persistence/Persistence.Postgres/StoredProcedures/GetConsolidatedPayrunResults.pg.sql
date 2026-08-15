@@ -2,6 +2,9 @@
 -- GetConsolidatedPayrunResults
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetConsolidatedPayrunResults;
+DROP PROCEDURE IF EXISTS GetConsolidatedPayrunResults;
+
 CREATE OR REPLACE FUNCTION GetConsolidatedPayrunResults(
     IN "tenantId"           INTEGER,
     IN "employeeId"         INTEGER,

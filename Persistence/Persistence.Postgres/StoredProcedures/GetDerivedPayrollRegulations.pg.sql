@@ -1,3 +1,6 @@
+DROP FUNCTION IF EXISTS GetDerivedPayrollRegulations;
+DROP PROCEDURE IF EXISTS GetDerivedPayrollRegulations;
+
 CREATE OR REPLACE FUNCTION GetDerivedPayrollRegulations(
     IN "tenantId" INTEGER, IN "payrollId" INTEGER,
     IN "regulationDate" TIMESTAMP(6), IN "createdBefore" TIMESTAMP(6)

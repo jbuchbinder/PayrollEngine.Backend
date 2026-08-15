@@ -5,6 +5,9 @@
 -- so this is a FUNCTION + RETURNS TABLE with RETURN QUERY EXECUTE.
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetCompanyCaseValues;
+DROP PROCEDURE IF EXISTS GetCompanyCaseValues;
+
 CREATE OR REPLACE FUNCTION GetCompanyCaseValues(
     IN "parentId"   INTEGER,
     IN "employeeId" INTEGER,

@@ -4,6 +4,9 @@
 -- executes the caller's query against it.
 -- =============================================================================
 
+DROP FUNCTION IF EXISTS GetCompanyCaseChangeValues;
+DROP PROCEDURE IF EXISTS GetCompanyCaseChangeValues;
+
 CREATE OR REPLACE FUNCTION GetCompanyCaseChangeValues(
     IN "parentId"   INTEGER,
     IN "employeeId" INTEGER,
